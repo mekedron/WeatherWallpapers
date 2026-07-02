@@ -97,8 +97,8 @@ extension PromptTemplate {
             The time of day: {time}. \
             The weather: {weather}. \
             Let the weather visibly transform the entire scene: the sky, the lighting, the color palette and \
-            every surface should respond to it — a wet sheen and puddles in rain, snow settling over surfaces \
-            in snowfall, mist softening the distance in fog. \
+            every surface should respond to it — a wet sheen in rain, snow settling over surfaces in snowfall, \
+            mist softening the distance in fog. \
             Keep the composition and all key elements of the original image recognizable and in their places, \
             and stay true to the original artistic style, technique and level of detail.
             """
