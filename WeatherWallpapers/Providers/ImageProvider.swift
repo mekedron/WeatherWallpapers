@@ -1,4 +1,5 @@
 import Foundation
+import Security
 
 /// Image bytes plus the API usage billed to produce them.
 struct ProviderResult: Sendable {
@@ -39,8 +40,16 @@ struct ProviderError: LocalizedError {
     var usage: APICallUsage? = nil
     var errorDescription: String? { message }
 
-    static func missingKey(providerName: String) -> ProviderError {
-        ProviderError(message: String(localized: "No API key for \(providerName). Add it in Settings."))
+    static func keyUnavailable(providerName: String, reason: KeychainStore.KeyReadError) -> ProviderError {
+        switch reason {
+        case .notFound(flagWasSet: false):
+            return ProviderError(message: String(localized: "No API key for \(providerName). Add it in Settings."))
+        case .notFound(flagWasSet: true):
+            return ProviderError(message: String(localized: "The \(providerName) API key was saved earlier but is now missing from the Keychain — it may have been removed or hasn't synced via iCloud yet. Re-enter it in Settings."))
+        case .failed(let status):
+            let detail = (SecCopyErrorMessageString(status, nil) as String?) ?? "OSStatus \(status)"
+            return ProviderError(message: String(localized: "Couldn't read the \(providerName) API key from the Keychain: \(detail) (code \(status)). Try re-entering it in Settings."))
+        }
     }
 }
 
@@ -58,7 +67,17 @@ enum ProviderHTTP {
         guard let http = response as? HTTPURLResponse else { throw URLError(.badServerResponse) }
         guard (200..<300).contains(http.statusCode) else {
             let message = apiErrorMessage(data) ?? String(data: data.prefix(500), encoding: .utf8) ?? ""
-            throw ProviderError(message: "HTTP \(http.statusCode): \(message)")
+            let hint: String?
+            switch http.statusCode {
+            case 401, 403:
+                hint = String(localized: "The API key was rejected — check it in Settings.")
+            case 429:
+                hint = String(localized: "Rate limit or quota exceeded — wait a moment or check your plan and billing.")
+            default:
+                hint = nil
+            }
+            let prefix = hint.map { $0 + " " } ?? ""
+            throw ProviderError(message: "\(prefix)HTTP \(http.statusCode): \(message)")
         }
         return data
     }

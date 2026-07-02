@@ -219,8 +219,12 @@ struct NewSetFlow: View {
 
     private func generateOriginal() {
         guard let provider = ProviderRegistry.provider(id: providerID) else { return }
-        guard let apiKey = KeychainStore.apiKey(for: provider.id), !apiKey.isEmpty else {
-            generationError = String(localized: "No API key for \(provider.displayName). Add it in Settings.")
+        let apiKey: String
+        switch KeychainStore.readAPIKey(for: provider.id) {
+        case .success(let key):
+            apiKey = key
+        case .failure(let reason):
+            generationError = ProviderError.keyUnavailable(providerName: provider.displayName, reason: reason).message
             return
         }
         let size = selectedDevice?.pixelSize ?? CGSize(width: 1024, height: 1024)

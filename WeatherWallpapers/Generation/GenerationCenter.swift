@@ -25,7 +25,8 @@ final class GenerationCenter: ObservableObject {
         /// Resolved once per batch from the set's metadata.
         let promptTemplate: PromptTemplate
         /// Read once per batch — every Keychain read may prompt the user.
-        let apiKey: String?
+        /// A failed read is kept so jobs can report the real reason.
+        let apiKey: Result<String, KeychainStore.KeyReadError>
         let upscalerID: String
         let upscalerKey: String?
     }
@@ -53,7 +54,7 @@ final class GenerationCenter: ObservableObject {
             targetSize: set.meta.device?.pixelSize ?? CGSize(width: 1024, height: 1024),
             providerID: providerID,
             promptTemplate: WallpaperStore.shared.template(id: set.meta.promptTemplateID),
-            apiKey: KeychainStore.apiKey(for: providerID),
+            apiKey: KeychainStore.readAPIKey(for: providerID),
             upscalerID: upscalerID,
             upscalerKey: upscalerNeedsKey ? KeychainStore.apiKey(for: upscalerID) : nil
         )
@@ -148,8 +149,12 @@ final class GenerationCenter: ObservableObject {
         guard let provider = ProviderRegistry.provider(id: context.providerID) else {
             throw ProviderError(message: String(localized: "Unknown image provider."))
         }
-        guard let apiKey = context.apiKey, !apiKey.isEmpty else {
-            throw ProviderError.missingKey(providerName: provider.displayName)
+        let apiKey: String
+        switch context.apiKey {
+        case .success(let key):
+            apiKey = key
+        case .failure(let reason):
+            throw ProviderError.keyUnavailable(providerName: provider.displayName, reason: reason)
         }
 
         try await WallpaperFileSystem.ensureDownloaded(context.originalURL)

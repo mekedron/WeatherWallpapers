@@ -19,16 +19,41 @@ enum KeychainStore {
         UserDefaults.standard.bool(forKey: flagKey(for: providerID))
     }
 
+    /// Why a Keychain read produced no key — kept distinct so the UI can tell
+    /// "no key entered" apart from "key exists but could not be read".
+    enum KeyReadError: Error, Sendable {
+        /// Nothing stored. `flagWasSet` means UserDefaults claims a key was
+        /// saved earlier — likely removed elsewhere or not yet synced via iCloud.
+        case notFound(flagWasSet: Bool)
+        /// SecItemCopyMatching failed (access denied, keychain locked, …).
+        case failed(OSStatus)
+    }
+
     /// Reads the key. May prompt the user once — call only right before use.
-    static func apiKey(for providerID: String) -> String? {
+    static func readAPIKey(for providerID: String) -> Result<String, KeyReadError> {
         var query = baseQuery(for: providerID)
         query[kSecReturnData as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
 
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
-        guard status == errSecSuccess, let data = result as? Data else { return nil }
-        return String(data: data, encoding: .utf8)
+        switch status {
+        case errSecSuccess:
+            guard let data = result as? Data,
+                  let key = String(data: data, encoding: .utf8), !key.isEmpty else {
+                return .failure(.notFound(flagWasSet: hasAPIKey(for: providerID)))
+            }
+            return .success(key)
+        case errSecItemNotFound:
+            return .failure(.notFound(flagWasSet: hasAPIKey(for: providerID)))
+        default:
+            return .failure(.failed(status))
+        }
+    }
+
+    /// Convenience for callers that can proceed without the key (e.g. upscalers).
+    static func apiKey(for providerID: String) -> String? {
+        try? readAPIKey(for: providerID).get()
     }
 
     static func setAPIKey(_ key: String?, for providerID: String) {

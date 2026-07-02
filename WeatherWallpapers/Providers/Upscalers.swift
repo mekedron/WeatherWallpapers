@@ -55,7 +55,7 @@ struct StabilityUpscaler: UpscaleProvider {
 
     func upscale(_ image: Data, to target: CGSize, apiKey: String?) async throws -> ProviderResult {
         guard let apiKey, !apiKey.isEmpty else {
-            throw ProviderError.missingKey(providerName: "Stability AI")
+            throw ProviderError.keyUnavailable(providerName: "Stability AI", reason: .notFound(flagWasSet: false))
         }
         // The fast upscaler accepts up to ~1 MP of input.
         let prepared = ImageUtil.limited(toMegapixels: 1.0, data: image)
