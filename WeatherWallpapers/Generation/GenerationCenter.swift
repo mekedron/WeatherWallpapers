@@ -132,6 +132,14 @@ final class GenerationCenter: ObservableObject {
     private func finish(_ key: JobKey, error: Error?) {
         runningTasks[key] = nil
         overrides[key] = nil
+        if error == nil, let context = contexts[key.setID] {
+            // Remember which template produced this image, for "outdated" checks.
+            WallpaperFileSystem.recordGeneratedTemplate(
+                context.promptTemplate.id,
+                variant: key.variant.baseName,
+                folderURL: context.folderURL
+            )
+        }
         if let error {
             if error is CancellationError {
                 states[key] = nil

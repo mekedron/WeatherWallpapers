@@ -91,7 +91,8 @@ struct PromptLibraryView: View {
             name: String(localized: "\(template.name) Copy"),
             summary: template.summary,
             text: template.text,
-            weatherNotes: template.weatherNotes
+            weatherNotes: template.weatherNotes,
+            timeNotes: template.timeNotes
         ))
     }
 }
@@ -102,6 +103,17 @@ private struct PromptTemplateEditor: View {
     @EnvironmentObject private var store: WallpaperStore
     @Environment(\.dismiss) private var dismiss
     @State var template: PromptTemplate
+
+    // Preview + test target: one variant the user dials in.
+    @State private var previewWeather: WeatherCondition = .rain
+    @State private var previewTime: TimeOfDay = .sunset
+
+    // Test generation.
+    @State private var testSetID: String?
+    @State private var isTesting = false
+    @State private var testImage: CGImage?
+    @State private var testError: String?
+    @State private var testCost: String?
 
     private var isBuiltIn: Bool { template.isBuiltIn }
 
@@ -145,13 +157,29 @@ private struct PromptTemplateEditor: View {
                             minHeight: 160,
                             maxHeight: 320
                         )
+                        validationWarnings
                     } header: {
                         Text("Prompt")
                     } footer: {
                         placeholdersFooter
                     }
-                    weatherNotesSection
+                    notesSection(
+                        title: "Weather-Specific Additions",
+                        addLabel: "Add Weather Condition",
+                        placeholder: String(localized: "e.g. keep the tornado far away…"),
+                        cases: WeatherCondition.allCases.map { ($0.rawValue, $0.localizedName, $0.symbolName) },
+                        notes: $template.weatherNotes
+                    )
+                    notesSection(
+                        title: "Time-Specific Additions",
+                        addLabel: "Add Time of Day",
+                        placeholder: String(localized: "e.g. lit windows and street lamps…"),
+                        cases: TimeOfDay.allCases.map { ($0.rawValue, $0.localizedName, $0.symbolName) },
+                        notes: $template.timeNotes
+                    )
                 }
+                previewSection
+                testSection
             }
             .formStyle(.grouped)
             .navigationTitle(isBuiltIn ? Text(template.name) : Text("Edit Template"))
@@ -165,22 +193,14 @@ private struct PromptTemplateEditor: View {
                 ToolbarItem(placement: .confirmationAction) {
                     if isBuiltIn {
                         Button("Duplicate") {
-                            store.saveTemplate(PromptTemplate(
-                                id: UUID().uuidString,
-                                name: String(localized: "\(template.name) Copy"),
-                                summary: template.summary,
-                                text: template.text,
-                                weatherNotes: template.weatherNotes
-                            ))
+                            store.saveTemplate(duplicateOf(template))
                             dismiss()
                         }
                     } else {
                         Button("Save") {
                             var cleaned = template
-                            let notes = (cleaned.weatherNotes ?? [:]).filter {
-                                !$0.value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                            }
-                            cleaned.weatherNotes = notes.isEmpty ? nil : notes
+                            cleaned.weatherNotes = cleanedNotes(cleaned.weatherNotes)
+                            cleaned.timeNotes = cleanedNotes(cleaned.timeNotes)
                             store.saveTemplate(cleaned)
                             dismiss()
                         }
@@ -189,9 +209,14 @@ private struct PromptTemplateEditor: View {
                     }
                 }
             }
+            .onAppear {
+                if testSetID == nil {
+                    testSetID = store.sets.first { $0.originalFileName != nil }?.id
+                }
+            }
         }
         #if os(macOS)
-        .frame(minWidth: 520, minHeight: 560)
+        .frame(minWidth: 540, minHeight: 640)
         #endif
     }
 
@@ -199,32 +224,80 @@ private struct PromptTemplateEditor: View {
         Text("Placeholders: {time} and {weather} insert the detailed lighting and weather descriptions, {time_name} and {weather_name} the plain labels (\"Sunset\", \"Heavy Rain\"). The no-text-on-image rule is always appended automatically.")
     }
 
-    // MARK: - Weather-specific additions
-
-    /// Conditions that already have a note, in the canonical weather order.
-    private var notedConditions: [WeatherCondition] {
-        WeatherCondition.allCases.filter { template.weatherNotes?[$0.rawValue] != nil }
+    private func cleanedNotes(_ notes: [String: String]?) -> [String: String]? {
+        let kept = (notes ?? [:]).filter {
+            !$0.value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        }
+        return kept.isEmpty ? nil : kept
     }
 
-    private var weatherNotesSection: some View {
+    private func duplicateOf(_ template: PromptTemplate) -> PromptTemplate {
+        PromptTemplate(
+            id: UUID().uuidString,
+            name: String(localized: "\(template.name) Copy"),
+            summary: template.summary,
+            text: template.text,
+            weatherNotes: template.weatherNotes,
+            timeNotes: template.timeNotes
+        )
+    }
+
+    // MARK: - Validation
+
+    @ViewBuilder
+    private var validationWarnings: some View {
+        let unknown = template.unknownPlaceholders
+        if !unknown.isEmpty {
+            warning("Unknown placeholders sent to the model as-is: \(unknown.map { "{\($0)}" }.joined(separator: ", "))")
+        }
+        if !template.mentionsWeather {
+            warning("No {weather} or {weather_name} — all 30 weather conditions will look nearly identical.")
+        }
+        if !template.mentionsTime {
+            warning("No {time} or {time_name} — the four times of day will look nearly identical.")
+        }
+    }
+
+    private func warning(_ message: String) -> some View {
+        Label {
+            Text(message)
+        } icon: {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.yellow)
+        }
+        .font(.caption)
+        .foregroundStyle(.secondary)
+    }
+
+    // MARK: - Per-condition additions
+
+    /// One section for weather or time-of-day notes: existing rows in
+    /// canonical order plus a menu with the remaining conditions.
+    private func notesSection(
+        title: LocalizedStringKey,
+        addLabel: LocalizedStringKey,
+        placeholder: String,
+        cases: [(key: String, name: String, symbol: String)],
+        notes: Binding<[String: String]?>
+    ) -> some View {
         Section {
-            ForEach(notedConditions) { weather in
+            ForEach(cases.filter { notes.wrappedValue?[$0.key] != nil }, id: \.key) { item in
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        Label(weather.localizedName, systemImage: weather.symbolName)
+                        Label(item.name, systemImage: item.symbol)
                             .font(.subheadline.weight(.medium))
                         Spacer()
                         Button {
-                            template.weatherNotes?[weather.rawValue] = nil
+                            notes.wrappedValue?[item.key] = nil
                         } label: {
                             Image(systemName: "minus.circle.fill")
                                 .foregroundStyle(.secondary)
                         }
                         .buttonStyle(.plain)
                     }
-                    TextField("e.g. keep the tornado far away…", text: Binding(
-                        get: { template.weatherNotes?[weather.rawValue] ?? "" },
-                        set: { template.weatherNotes?[weather.rawValue] = $0 }
+                    TextField(placeholder, text: Binding(
+                        get: { notes.wrappedValue?[item.key] ?? "" },
+                        set: { notes.wrappedValue?[item.key] = $0 }
                     ))
                     #if os(macOS)
                     .textFieldStyle(.roundedBorder)
@@ -233,22 +306,152 @@ private struct PromptTemplateEditor: View {
                 .padding(.vertical, 2)
             }
             Menu {
-                ForEach(WeatherCondition.allCases.filter { template.weatherNotes?[$0.rawValue] == nil }) { weather in
+                ForEach(cases.filter { notes.wrappedValue?[$0.key] == nil }, id: \.key) { item in
                     Button {
-                        var notes = template.weatherNotes ?? [:]
-                        notes[weather.rawValue] = ""
-                        template.weatherNotes = notes
+                        var updated = notes.wrappedValue ?? [:]
+                        updated[item.key] = ""
+                        notes.wrappedValue = updated
                     } label: {
-                        Label(weather.localizedName, systemImage: weather.symbolName)
+                        Label(item.name, systemImage: item.symbol)
                     }
                 }
             } label: {
-                Label("Add Weather Condition", systemImage: "plus")
+                Label(addLabel, systemImage: "plus")
             }
         } header: {
-            Text("Weather-Specific Additions")
+            Text(title)
         } footer: {
-            Text("Appended to the prompt only for the selected weather conditions. Other conditions use just the prompt above.")
+            Text("Appended to the prompt only for the selected conditions.")
+        }
+    }
+
+    // MARK: - Preview
+
+    private var previewVariant: WallpaperVariant {
+        WallpaperVariant(weather: previewWeather, time: previewTime)
+    }
+
+    private var previewSection: some View {
+        Section {
+            Picker("Weather", selection: $previewWeather) {
+                ForEach(WeatherCondition.allCases) { weather in
+                    Text(weather.localizedName).tag(weather)
+                }
+            }
+            Picker("Time of Day", selection: $previewTime) {
+                ForEach(TimeOfDay.allCases) { time in
+                    Text(time.localizedName).tag(time)
+                }
+            }
+            Text(PromptBuilder.editPrompt(for: previewVariant, template: template))
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .textSelection(.enabled)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        } header: {
+            Text("Preview")
+        } footer: {
+            Text("The exact prompt that will be sent for this weather and time.")
+        }
+    }
+
+    // MARK: - Test generation
+
+    private var testSection: some View {
+        Section {
+            Picker("Test On", selection: $testSetID) {
+                Text("Choose a set…").tag(String?.none)
+                ForEach(store.sets.filter { $0.originalFileName != nil }) { set in
+                    Text(set.name).tag(String?.some(set.id))
+                }
+            }
+            Button {
+                runTest()
+            } label: {
+                if isTesting {
+                    HStack {
+                        ProgressView().controlSize(.small)
+                        Text("Generating…")
+                    }
+                } else {
+                    Label("Generate Test Image", systemImage: "wand.and.stars")
+                }
+            }
+            .disabled(isTesting || testSetID == nil)
+            if let testError {
+                Text(testError)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+            }
+            if let testImage {
+                HStack {
+                    Spacer()
+                    Image(testImage, scale: 1, label: Text("Test image"))
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxHeight: 280)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    Spacer()
+                }
+                if let testCost {
+                    Text("Cost: \(testCost), recorded in the set's budget.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        } header: {
+            Text("Try It")
+        } footer: {
+            Text("Generates one image from the chosen set's original with the preview weather and time — a cheap check before regenerating all 120. The result is not saved into the set; the API call is billed.")
+        }
+    }
+
+    private func runTest() {
+        guard let set = store.sets.first(where: { $0.id == testSetID }),
+              let originalURL = set.originalURL else { return }
+        let providerID = set.meta.providerID ?? ProviderRegistry.defaultProviderID
+        guard let provider = ProviderRegistry.provider(id: providerID) else { return }
+        let variant = previewVariant
+        let prompt = PromptBuilder.editPrompt(for: variant, template: template)
+        let targetSize = set.meta.device?.pixelSize ?? CGSize(width: 1024, height: 1024)
+        let folderURL = set.folderURL
+        isTesting = true
+        testError = nil
+        testImage = nil
+        testCost = nil
+        Task {
+            do {
+                let apiKey: String
+                switch KeychainStore.readAPIKey(for: providerID) {
+                case .success(let key):
+                    apiKey = key
+                case .failure(let reason):
+                    throw ProviderError.keyUnavailable(providerName: provider.displayName, reason: reason)
+                }
+                try await WallpaperFileSystem.ensureDownloaded(originalURL)
+                let original = try Data(contentsOf: originalURL)
+                let result = try await provider.edit(image: original, prompt: prompt, targetSize: targetSize, apiKey: apiKey)
+                testImage = ImageUtil.downsampled(data: result.data, maxPixel: 900)
+                if let usage = result.usage {
+                    testCost = UsageFormat.cost(usage.cost)
+                    await UsageLedgerStore.shared.append(
+                        [UsageRecord(category: .variantImage, variant: variant.baseName, usage: usage)],
+                        folderURL: folderURL
+                    )
+                    WallpaperStore.shared.refresh()
+                }
+            } catch {
+                // Failed calls can still bill tokens — keep them on the books.
+                if let usage = (error as? ProviderError)?.usage {
+                    await UsageLedgerStore.shared.append(
+                        [UsageRecord(category: .variantImage, variant: variant.baseName, usage: usage, failed: true)],
+                        folderURL: folderURL
+                    )
+                    WallpaperStore.shared.refresh()
+                }
+                testError = error.localizedDescription
+            }
+            isTesting = false
         }
     }
 }

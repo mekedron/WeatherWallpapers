@@ -212,8 +212,9 @@ struct LibraryView: View {
                 }.value
                 store.refresh()
                 // A foreign set may reference the exporter's custom prompt
-                // template — fall back to the default in that case.
-                store.resetUnknownTemplate(setID: importedName)
+                // template — restore it from the embedded snapshot into the
+                // library, or fall back to the default.
+                store.adoptImportedTemplate(setID: importedName)
             } catch {
                 transferError = error.localizedDescription
             }

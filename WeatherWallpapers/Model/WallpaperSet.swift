@@ -8,6 +8,9 @@ struct SetMetadata: Codable, Hashable {
     var sourcePrompt: String?
     /// ID of the prompt template used for variant generation; nil = Classic default.
     var promptTemplateID: String?
+    /// Full copy of a *custom* template, embedded so exported sets carry their
+    /// "recipe" along; nil when a built-in preset is selected.
+    var promptTemplateSnapshot: PromptTemplate?
 
     static let fileName = "set.json"
 }
@@ -23,6 +26,10 @@ struct WallpaperSet: Identifiable, Hashable {
     var originalFileName: String?
     /// Billable API calls made for this set (`usage.json`).
     var usage = UsageLedger()
+    /// Template ID each existing variant was generated with (`generation.json`),
+    /// keyed by variant base name. Variants generated before this was tracked
+    /// have no entry.
+    var generatedTemplates: [String: String] = [:]
 
     var id: String { name }
     var name: String { folderURL.lastPathComponent }
@@ -58,6 +65,16 @@ struct WallpaperSet: Identifiable, Hashable {
 
     var missingVariants: [WallpaperVariant] {
         WallpaperVariant.all.filter { !hasImage(for: $0) }
+    }
+
+    /// Existing variants generated with a different template than the given
+    /// one — candidates for a "regenerate outdated" pass.
+    func outdatedVariants(currentTemplateID: String) -> [WallpaperVariant] {
+        WallpaperVariant.all.filter { variant in
+            guard hasImage(for: variant),
+                  let generatedWith = generatedTemplates[variant.baseName] else { return false }
+            return generatedWith != currentTemplateID
+        }
     }
 
     static let originalBaseName = "!Original"

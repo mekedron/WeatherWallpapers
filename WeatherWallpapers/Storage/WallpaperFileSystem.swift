@@ -68,7 +68,15 @@ enum WallpaperFileSystem {
             }
         }
         let usage = loadLedger(folderURL: folderURL)
-        return WallpaperSet(folderURL: folderURL, meta: meta, existingFiles: files, originalFileName: original, usage: usage)
+        let generated = loadGeneratedTemplates(folderURL: folderURL)
+        return WallpaperSet(
+            folderURL: folderURL,
+            meta: meta,
+            existingFiles: files,
+            originalFileName: original,
+            usage: usage,
+            generatedTemplates: generated
+        )
     }
 
     static func normalizedName(_ rawName: String) -> String {
@@ -143,6 +151,30 @@ enum WallpaperFileSystem {
         let url = root.appendingPathComponent("devices.json")
         if let data = try? JSONEncoder().encode(devices) {
             try? data.write(to: url, options: .atomic)
+        }
+    }
+
+    // MARK: - Per-variant generation info (generation.json in the set folder)
+
+    static let generationFileName = "generation.json"
+
+    /// Which template each variant was last generated with.
+    static func loadGeneratedTemplates(folderURL: URL) -> [String: String] {
+        let url = folderURL.appendingPathComponent(generationFileName)
+        guard let data = try? Data(contentsOf: url),
+              let map = try? JSONDecoder().decode([String: String].self, from: data) else { return [:] }
+        return map
+    }
+
+    /// Records a successful generation. Call from one actor only (the
+    /// generation center's main-actor completion) — plain read-modify-write.
+    static func recordGeneratedTemplate(_ templateID: String, variant baseName: String, folderURL: URL) {
+        var map = loadGeneratedTemplates(folderURL: folderURL)
+        map[baseName] = templateID
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        if let data = try? encoder.encode(map) {
+            try? data.write(to: folderURL.appendingPathComponent(generationFileName), options: .atomic)
         }
     }
 

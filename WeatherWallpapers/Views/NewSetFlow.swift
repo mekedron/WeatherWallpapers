@@ -305,7 +305,8 @@ struct NewSetFlow: View {
                 providerID: providerID,
                 createdAt: Date(),
                 sourcePrompt: generationPrompt.isEmpty ? nil : generationPrompt,
-                promptTemplateID: templateID
+                promptTemplateID: templateID,
+                promptTemplateSnapshot: store.snapshot(forTemplateID: templateID)
             )
             let set = try store.createSet(
                 name: name,

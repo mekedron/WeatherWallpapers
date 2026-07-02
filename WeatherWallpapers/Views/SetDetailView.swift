@@ -158,6 +158,16 @@ struct SetDetailView: View {
                         }
                         .buttonStyle(.bordered)
                     }
+                    let outdated = set.outdatedVariants(currentTemplateID: store.template(id: set.meta.promptTemplateID).id)
+                    if !outdated.isEmpty {
+                        Button {
+                            center.enqueue(set: set, variants: outdated)
+                        } label: {
+                            Label("Regenerate Outdated (\(outdated.count))", systemImage: "clock.arrow.circlepath")
+                        }
+                        .buttonStyle(.bordered)
+                        .help("Images generated with a different prompt style than the current one.")
+                    }
                 }
             }
         }

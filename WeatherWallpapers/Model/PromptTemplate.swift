@@ -17,24 +17,61 @@ struct PromptTemplate: Identifiable, Codable, Hashable {
     /// Extra instructions applied only to specific weather conditions,
     /// keyed by `WeatherCondition` rawValue. nil/absent for most templates.
     var weatherNotes: [String: String]?
+    /// Extra instructions applied only to specific times of day,
+    /// keyed by `TimeOfDay` rawValue.
+    var timeNotes: [String: String]?
 
     var isBuiltIn: Bool { Self.builtIn(id: id) != nil }
 
     /// Fills the placeholders for one variant and appends the
-    /// weather-specific note when one is set for its condition.
+    /// weather/time-specific notes when set for its condition.
     func render(for variant: WallpaperVariant) -> String {
         var result = text
             .replacingOccurrences(of: "{time}", with: variant.time.promptModule)
             .replacingOccurrences(of: "{weather}", with: variant.weather.promptModule)
             .replacingOccurrences(of: "{time_name}", with: variant.time.englishLabel)
             .replacingOccurrences(of: "{weather_name}", with: variant.weather.englishLabel)
-        if let note = weatherNotes?[variant.weather.rawValue] {
-            let trimmed = note.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !trimmed.isEmpty {
-                result += " For \(variant.weather.englishLabel) weather specifically: \(trimmed)"
-            }
+        if let note = trimmedNote(weatherNotes?[variant.weather.rawValue]) {
+            result += " For \(variant.weather.englishLabel) weather specifically: \(note)"
+        }
+        if let note = trimmedNote(timeNotes?[variant.time.rawValue]) {
+            result += " For \(variant.time.englishLabel.lowercased()) specifically: \(note)"
         }
         return result
+    }
+
+    private func trimmedNote(_ note: String?) -> String? {
+        guard let trimmed = note?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !trimmed.isEmpty else { return nil }
+        return trimmed
+    }
+}
+
+// MARK: - Validation
+
+extension PromptTemplate {
+    static let knownPlaceholders: Set<String> = ["time", "weather", "time_name", "weather_name"]
+
+    /// `{tokens}` in the text that won't be substituted — almost always typos
+    /// ("{wether}") that would be sent to the model literally.
+    var unknownPlaceholders: [String] {
+        let matches = text.matches(of: #/\{([a-zA-Z_]+)\}/#)
+        var seen = Set<String>()
+        return matches.compactMap { match in
+            let token = String(match.1)
+            guard !Self.knownPlaceholders.contains(token), seen.insert(token).inserted else { return nil }
+            return token
+        }
+    }
+
+    /// Without a weather placeholder all 120 variants come out nearly identical.
+    var mentionsWeather: Bool {
+        text.contains("{weather}") || text.contains("{weather_name}")
+    }
+
+    /// Without a time placeholder the four times of day look the same.
+    var mentionsTime: Bool {
+        text.contains("{time}") || text.contains("{time_name}")
     }
 }
 
@@ -54,13 +91,16 @@ extension PromptTemplate {
         PromptTemplate(
             id: defaultID,
             name: String(localized: "Classic"),
-            summary: String(localized: "Changes only the sky, lighting and weather. Everything else stays exactly in place."),
+            summary: String(localized: "The weather transforms the whole scene while the composition and style stay recognizable."),
             text: """
             Change the time of day and the weather of this image. \
             The time of day: {time}. \
             The weather: {weather}. \
-            Keep the exact composition and every element of the original image in place. \
-            Preserve the original artistic style, technique, color language and level of detail exactly.
+            Let the weather visibly transform the entire scene: the sky, the lighting, the color palette and \
+            every surface should respond to it — a wet sheen and puddles in rain, snow settling over surfaces \
+            in snowfall, mist softening the distance in fog. \
+            Keep the composition and all key elements of the original image recognizable and in their places, \
+            and stay true to the original artistic style, technique and level of detail.
             """
         ),
         PromptTemplate(

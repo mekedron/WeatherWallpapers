@@ -120,16 +120,27 @@ final class WallpaperStore: ObservableObject {
         refresh()
     }
 
-    /// Imported sets may reference a prompt template from someone else's
-    /// library — reset such dangling references to the default so the stale
-    /// ID doesn't linger in set.json.
-    func resetUnknownTemplate(setID: String) {
+    /// Full copy of a custom template to embed into set.json, so exported
+    /// sets carry their prompt along. nil for built-in presets.
+    func snapshot(forTemplateID id: String) -> PromptTemplate? {
+        customTemplates.first { $0.id == id }
+    }
+
+    /// Resolves the template reference of a freshly imported set: an unknown
+    /// ID is restored from the embedded snapshot into the library when one
+    /// exists, otherwise reset to the default.
+    func adoptImportedTemplate(setID: String) {
         guard let set = set(id: setID),
               let id = set.meta.promptTemplateID,
               !allTemplates.contains(where: { $0.id == id }) else { return }
-        var meta = set.meta
-        meta.promptTemplateID = nil
-        try? WallpaperFileSystem.saveMetadata(meta, in: set.folderURL)
+        if let snapshot = set.meta.promptTemplateSnapshot, snapshot.id == id {
+            saveTemplate(snapshot)
+        } else {
+            var meta = set.meta
+            meta.promptTemplateID = nil
+            meta.promptTemplateSnapshot = nil
+            try? WallpaperFileSystem.saveMetadata(meta, in: set.folderURL)
+        }
         refresh()
     }
 
@@ -137,6 +148,7 @@ final class WallpaperStore: ObservableObject {
     func setPromptTemplate(_ templateID: String, for set: WallpaperSet) {
         var meta = set.meta
         meta.promptTemplateID = templateID
+        meta.promptTemplateSnapshot = snapshot(forTemplateID: templateID)
         try? WallpaperFileSystem.saveMetadata(meta, in: set.folderURL)
         refresh()
     }
