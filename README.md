@@ -1,0 +1,50 @@
+# Weather Wallpapers
+
+A free, open-source app for iPhone, iPad and Mac that generates **120 wallpaper variants** from a single artwork — one for every combination of 30 weather conditions × 4 times of day — and serves the right one to the Shortcuts app so your wallpaper always matches the sky outside.
+
+## How it works
+
+1. **Create a wallpaper set.** Pick a source image from Photos or Files, or generate one with AI from any prompt (regenerate until you like it).
+2. **Pick your device.** Built-in list of iPhone / iPad / MacBook screen resolutions (or add a custom one) — the target size drives generation cost.
+3. **Generate.** The app produces all 120 variants by editing your original with a modular prompt: time-of-day lighting + weather description, preserving the composition and art style. Browse them grouped by weather, regenerate any single image or a whole selection.
+4. **Automate with Shortcuts.** The app exposes a **“Get Current Wallpaper”** action: it detects your location, fetches the weather from Open-Meteo (free, no key), maps it to one of the 120 variants and returns the image. Chain it with the system “Set Wallpaper” action and a Time-of-Day automation — done.
+
+## Providers
+
+Bring your own API key (stored in the Keychain, synced via iCloud Keychain):
+
+- **ChatGPT (OpenAI)** — `gpt-image-1`
+- **Nano Banana (Google Gemini)** — `gemini-2.5-flash-image`
+
+The provider architecture is pluggable — adding more is a single file.
+
+## Storage
+
+No database. Each wallpaper set is a plain folder of PNGs (`Clear Day.png`, `Snow Night.png`, …) plus the original image and a small `set.json`, stored in the app's iCloud Drive container. Everything syncs across your devices and stays usable even without the app. With no iCloud account the app falls back to local Documents.
+
+## Privacy
+
+- No backend, no analytics, no accounts.
+- API keys live in your Keychain and are sent only to the provider you chose.
+- Location never leaves the device — it's only used for the weather request to Open-Meteo.
+
+## Building & running
+
+```bash
+./run.sh            # iPhone + iPad simulators + Mac app
+./run.sh iphone     # iPhone simulator only
+./run.sh ipad       # iPad simulator only
+./run.sh mac        # macOS app only
+```
+
+Or open `WeatherWallpapers.xcodeproj` in Xcode 16+ and run on iOS 17+ / macOS 14+.
+
+**Signing note:** iCloud entitlements are restricted, so macOS **Debug** builds are signed ad-hoc without iCloud and use local storage — they run out of the box, no team required. For iCloud sync on the Mac, set your development team in Signing & Capabilities and build the **Release** configuration (Debug on iOS simulators is unaffected).
+
+## Languages
+
+English and Russian.
+
+## License
+
+MIT

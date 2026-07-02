@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Debug builds run with ad-hoc signing, which cannot carry the
+	     restricted iCloud entitlements. The app falls back to local storage.
+	     Release builds use WeatherWallpapersMac.entitlements with iCloud. -->
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.network.client</key>
+	<true/>
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
+	<key>com.apple.security.personal-information.location</key>
+	<true/>
+</dict>
+</plist>

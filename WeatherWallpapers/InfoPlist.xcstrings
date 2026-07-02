@@ -1,0 +1,24 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Weather Wallpapers" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Weather Wallpapers" } }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your location is used only to pick the wallpaper matching the current weather at your place. It never leaves your device." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Геолокация нужна только чтобы подобрать обои под текущую погоду в вашем месте. Она не покидает ваше устройство." } }
+      }
+    },
+    "NSLocationUsageDescription" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your location is used only to pick the wallpaper matching the current weather at your place. It never leaves your device." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Геолокация нужна только чтобы подобрать обои под текущую погоду в вашем месте. Она не покидает ваше устройство." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

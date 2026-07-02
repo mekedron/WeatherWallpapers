@@ -1,0 +1,121 @@
+id,time_slug,time_label,weather_slug,weather_label,weather_ru,filename,album_or_tag
+1,sunrise,Sunrise,clear,Clear,Ясно,clear_sunrise.png,weather_sunrise_clear
+2,sunrise,Sunrise,mostly_clear,Mostly Clear,Преимущественно ясно,mostly_clear_sunrise.png,weather_sunrise_mostly_clear
+3,sunrise,Sunrise,partly_cloudy,Partly Cloudy,Переменная облачность,partly_cloudy_sunrise.png,weather_sunrise_partly_cloudy
+4,sunrise,Sunrise,mostly_cloudy,Mostly Cloudy,Преимущественно облачно,mostly_cloudy_sunrise.png,weather_sunrise_mostly_cloudy
+5,sunrise,Sunrise,cloudy,Cloudy,Пасмурно,cloudy_sunrise.png,weather_sunrise_cloudy
+6,sunrise,Sunrise,foggy,Foggy,Туман,foggy_sunrise.png,weather_sunrise_foggy
+7,sunrise,Sunrise,haze,Haze,Дымка,haze_sunrise.png,weather_sunrise_haze
+8,sunrise,Sunrise,smoky,Smoky,Дым,smoky_sunrise.png,weather_sunrise_smoky
+9,sunrise,Sunrise,blowing_dust,Blowing Dust,Пыль / песчаная буря,blowing_dust_sunrise.png,weather_sunrise_blowing_dust
+10,sunrise,Sunrise,breezy,Breezy,Ветрено,breezy_sunrise.png,weather_sunrise_breezy
+11,sunrise,Sunrise,windy,Windy,Сильный ветер,windy_sunrise.png,weather_sunrise_windy
+12,sunrise,Sunrise,drizzle,Drizzle,Морось,drizzle_sunrise.png,weather_sunrise_drizzle
+13,sunrise,Sunrise,rain,Rain,Дождь,rain_sunrise.png,weather_sunrise_rain
+14,sunrise,Sunrise,heavy_rain,Heavy Rain,Сильный дождь,heavy_rain_sunrise.png,weather_sunrise_heavy_rain
+15,sunrise,Sunrise,isolated_thunderstorms,Isolated Thunderstorms,Локальные грозы,isolated_thunderstorms_sunrise.png,weather_sunrise_isolated_thunderstorms
+16,sunrise,Sunrise,scattered_thunderstorms,Scattered Thunderstorms,Рассеянные грозы,scattered_thunderstorms_sunrise.png,weather_sunrise_scattered_thunderstorms
+17,sunrise,Sunrise,strong_storms,Strong Storms,Сильные штормы,strong_storms_sunrise.png,weather_sunrise_strong_storms
+18,sunrise,Sunrise,thunderstorms,Thunderstorms,Грозы,thunderstorms_sunrise.png,weather_sunrise_thunderstorms
+19,sunrise,Sunrise,flurries,Flurries,Снежные заряды,flurries_sunrise.png,weather_sunrise_flurries
+20,sunrise,Sunrise,snow,Snow,Снег,snow_sunrise.png,weather_sunrise_snow
+21,sunrise,Sunrise,heavy_snow,Heavy Snow,Сильный снег,heavy_snow_sunrise.png,weather_sunrise_heavy_snow
+22,sunrise,Sunrise,sleet,Sleet,Мокрый снег / ледяная крупа,sleet_sunrise.png,weather_sunrise_sleet
+23,sunrise,Sunrise,freezing_drizzle,Freezing Drizzle,Ледяная морось,freezing_drizzle_sunrise.png,weather_sunrise_freezing_drizzle
+24,sunrise,Sunrise,freezing_rain,Freezing Rain,Ледяной дождь,freezing_rain_sunrise.png,weather_sunrise_freezing_rain
+25,sunrise,Sunrise,frigid,Frigid,Мороз,frigid_sunrise.png,weather_sunrise_frigid
+26,sunrise,Sunrise,hail,Hail,Град,hail_sunrise.png,weather_sunrise_hail
+27,sunrise,Sunrise,hot,Hot,Жара,hot_sunrise.png,weather_sunrise_hot
+28,sunrise,Sunrise,tornado,Tornado,Торнадо,tornado_sunrise.png,weather_sunrise_tornado
+29,sunrise,Sunrise,tropical_storm,Tropical Storm,Тропический шторм,tropical_storm_sunrise.png,weather_sunrise_tropical_storm
+30,sunrise,Sunrise,hurricane,Hurricane,Ураган,hurricane_sunrise.png,weather_sunrise_hurricane
+31,day,Day,clear,Clear,Ясно,clear_day.png,weather_day_clear
+32,day,Day,mostly_clear,Mostly Clear,Преимущественно ясно,mostly_clear_day.png,weather_day_mostly_clear
+33,day,Day,partly_cloudy,Partly Cloudy,Переменная облачность,partly_cloudy_day.png,weather_day_partly_cloudy
+34,day,Day,mostly_cloudy,Mostly Cloudy,Преимущественно облачно,mostly_cloudy_day.png,weather_day_mostly_cloudy
+35,day,Day,cloudy,Cloudy,Пасмурно,cloudy_day.png,weather_day_cloudy
+36,day,Day,foggy,Foggy,Туман,foggy_day.png,weather_day_foggy
+37,day,Day,haze,Haze,Дымка,haze_day.png,weather_day_haze
+38,day,Day,smoky,Smoky,Дым,smoky_day.png,weather_day_smoky
+39,day,Day,blowing_dust,Blowing Dust,Пыль / песчаная буря,blowing_dust_day.png,weather_day_blowing_dust
+40,day,Day,breezy,Breezy,Ветрено,breezy_day.png,weather_day_breezy
+41,day,Day,windy,Windy,Сильный ветер,windy_day.png,weather_day_windy
+42,day,Day,drizzle,Drizzle,Морось,drizzle_day.png,weather_day_drizzle
+43,day,Day,rain,Rain,Дождь,rain_day.png,weather_day_rain
+44,day,Day,heavy_rain,Heavy Rain,Сильный дождь,heavy_rain_day.png,weather_day_heavy_rain
+45,day,Day,isolated_thunderstorms,Isolated Thunderstorms,Локальные грозы,isolated_thunderstorms_day.png,weather_day_isolated_thunderstorms
+46,day,Day,scattered_thunderstorms,Scattered Thunderstorms,Рассеянные грозы,scattered_thunderstorms_day.png,weather_day_scattered_thunderstorms
+47,day,Day,strong_storms,Strong Storms,Сильные штормы,strong_storms_day.png,weather_day_strong_storms
+48,day,Day,thunderstorms,Thunderstorms,Грозы,thunderstorms_day.png,weather_day_thunderstorms
+49,day,Day,flurries,Flurries,Снежные заряды,flurries_day.png,weather_day_flurries
+50,day,Day,snow,Snow,Снег,snow_day.png,weather_day_snow
+51,day,Day,heavy_snow,Heavy Snow,Сильный снег,heavy_snow_day.png,weather_day_heavy_snow
+52,day,Day,sleet,Sleet,Мокрый снег / ледяная крупа,sleet_day.png,weather_day_sleet
+53,day,Day,freezing_drizzle,Freezing Drizzle,Ледяная морось,freezing_drizzle_day.png,weather_day_freezing_drizzle
+54,day,Day,freezing_rain,Freezing Rain,Ледяной дождь,freezing_rain_day.png,weather_day_freezing_rain
+55,day,Day,frigid,Frigid,Мороз,frigid_day.png,weather_day_frigid
+56,day,Day,hail,Hail,Град,hail_day.png,weather_day_hail
+57,day,Day,hot,Hot,Жара,hot_day.png,weather_day_hot
+58,day,Day,tornado,Tornado,Торнадо,tornado_day.png,weather_day_tornado
+59,day,Day,tropical_storm,Tropical Storm,Тропический шторм,tropical_storm_day.png,weather_day_tropical_storm
+60,day,Day,hurricane,Hurricane,Ураган,hurricane_day.png,weather_day_hurricane
+61,sunset,Sunset,clear,Clear,Ясно,clear_sunset.png,weather_sunset_clear
+62,sunset,Sunset,mostly_clear,Mostly Clear,Преимущественно ясно,mostly_clear_sunset.png,weather_sunset_mostly_clear
+63,sunset,Sunset,partly_cloudy,Partly Cloudy,Переменная облачность,partly_cloudy_sunset.png,weather_sunset_partly_cloudy
+64,sunset,Sunset,mostly_cloudy,Mostly Cloudy,Преимущественно облачно,mostly_cloudy_sunset.png,weather_sunset_mostly_cloudy
+65,sunset,Sunset,cloudy,Cloudy,Пасмурно,cloudy_sunset.png,weather_sunset_cloudy
+66,sunset,Sunset,foggy,Foggy,Туман,foggy_sunset.png,weather_sunset_foggy
+67,sunset,Sunset,haze,Haze,Дымка,haze_sunset.png,weather_sunset_haze
+68,sunset,Sunset,smoky,Smoky,Дым,smoky_sunset.png,weather_sunset_smoky
+69,sunset,Sunset,blowing_dust,Blowing Dust,Пыль / песчаная буря,blowing_dust_sunset.png,weather_sunset_blowing_dust
+70,sunset,Sunset,breezy,Breezy,Ветрено,breezy_sunset.png,weather_sunset_breezy
+71,sunset,Sunset,windy,Windy,Сильный ветер,windy_sunset.png,weather_sunset_windy
+72,sunset,Sunset,drizzle,Drizzle,Морось,drizzle_sunset.png,weather_sunset_drizzle
+73,sunset,Sunset,rain,Rain,Дождь,rain_sunset.png,weather_sunset_rain
+74,sunset,Sunset,heavy_rain,Heavy Rain,Сильный дождь,heavy_rain_sunset.png,weather_sunset_heavy_rain
+75,sunset,Sunset,isolated_thunderstorms,Isolated Thunderstorms,Локальные грозы,isolated_thunderstorms_sunset.png,weather_sunset_isolated_thunderstorms
+76,sunset,Sunset,scattered_thunderstorms,Scattered Thunderstorms,Рассеянные грозы,scattered_thunderstorms_sunset.png,weather_sunset_scattered_thunderstorms
+77,sunset,Sunset,strong_storms,Strong Storms,Сильные штормы,strong_storms_sunset.png,weather_sunset_strong_storms
+78,sunset,Sunset,thunderstorms,Thunderstorms,Грозы,thunderstorms_sunset.png,weather_sunset_thunderstorms
+79,sunset,Sunset,flurries,Flurries,Снежные заряды,flurries_sunset.png,weather_sunset_flurries
+80,sunset,Sunset,snow,Snow,Снег,snow_sunset.png,weather_sunset_snow
+81,sunset,Sunset,heavy_snow,Heavy Snow,Сильный снег,heavy_snow_sunset.png,weather_sunset_heavy_snow
+82,sunset,Sunset,sleet,Sleet,Мокрый снег / ледяная крупа,sleet_sunset.png,weather_sunset_sleet
+83,sunset,Sunset,freezing_drizzle,Freezing Drizzle,Ледяная морось,freezing_drizzle_sunset.png,weather_sunset_freezing_drizzle
+84,sunset,Sunset,freezing_rain,Freezing Rain,Ледяной дождь,freezing_rain_sunset.png,weather_sunset_freezing_rain
+85,sunset,Sunset,frigid,Frigid,Мороз,frigid_sunset.png,weather_sunset_frigid
+86,sunset,Sunset,hail,Hail,Град,hail_sunset.png,weather_sunset_hail
+87,sunset,Sunset,hot,Hot,Жара,hot_sunset.png,weather_sunset_hot
+88,sunset,Sunset,tornado,Tornado,Торнадо,tornado_sunset.png,weather_sunset_tornado
+89,sunset,Sunset,tropical_storm,Tropical Storm,Тропический шторм,tropical_storm_sunset.png,weather_sunset_tropical_storm
+90,sunset,Sunset,hurricane,Hurricane,Ураган,hurricane_sunset.png,weather_sunset_hurricane
+91,night,Night,clear,Clear,Ясно,clear_night.png,weather_night_clear
+92,night,Night,mostly_clear,Mostly Clear,Преимущественно ясно,mostly_clear_night.png,weather_night_mostly_clear
+93,night,Night,partly_cloudy,Partly Cloudy,Переменная облачность,partly_cloudy_night.png,weather_night_partly_cloudy
+94,night,Night,mostly_cloudy,Mostly Cloudy,Преимущественно облачно,mostly_cloudy_night.png,weather_night_mostly_cloudy
+95,night,Night,cloudy,Cloudy,Пасмурно,cloudy_night.png,weather_night_cloudy
+96,night,Night,foggy,Foggy,Туман,foggy_night.png,weather_night_foggy
+97,night,Night,haze,Haze,Дымка,haze_night.png,weather_night_haze
+98,night,Night,smoky,Smoky,Дым,smoky_night.png,weather_night_smoky
+99,night,Night,blowing_dust,Blowing Dust,Пыль / песчаная буря,blowing_dust_night.png,weather_night_blowing_dust
+100,night,Night,breezy,Breezy,Ветрено,breezy_night.png,weather_night_breezy
+101,night,Night,windy,Windy,Сильный ветер,windy_night.png,weather_night_windy
+102,night,Night,drizzle,Drizzle,Морось,drizzle_night.png,weather_night_drizzle
+103,night,Night,rain,Rain,Дождь,rain_night.png,weather_night_rain
+104,night,Night,heavy_rain,Heavy Rain,Сильный дождь,heavy_rain_night.png,weather_night_heavy_rain
+105,night,Night,isolated_thunderstorms,Isolated Thunderstorms,Локальные грозы,isolated_thunderstorms_night.png,weather_night_isolated_thunderstorms
+106,night,Night,scattered_thunderstorms,Scattered Thunderstorms,Рассеянные грозы,scattered_thunderstorms_night.png,weather_night_scattered_thunderstorms
+107,night,Night,strong_storms,Strong Storms,Сильные штормы,strong_storms_night.png,weather_night_strong_storms
+108,night,Night,thunderstorms,Thunderstorms,Грозы,thunderstorms_night.png,weather_night_thunderstorms
+109,night,Night,flurries,Flurries,Снежные заряды,flurries_night.png,weather_night_flurries
+110,night,Night,snow,Snow,Снег,snow_night.png,weather_night_snow
+111,night,Night,heavy_snow,Heavy Snow,Сильный снег,heavy_snow_night.png,weather_night_heavy_snow
+112,night,Night,sleet,Sleet,Мокрый снег / ледяная крупа,sleet_night.png,weather_night_sleet
+113,night,Night,freezing_drizzle,Freezing Drizzle,Ледяная морось,freezing_drizzle_night.png,weather_night_freezing_drizzle
+114,night,Night,freezing_rain,Freezing Rain,Ледяной дождь,freezing_rain_night.png,weather_night_freezing_rain
+115,night,Night,frigid,Frigid,Мороз,frigid_night.png,weather_night_frigid
+116,night,Night,hail,Hail,Град,hail_night.png,weather_night_hail
+117,night,Night,hot,Hot,Жара,hot_night.png,weather_night_hot
+118,night,Night,tornado,Tornado,Торнадо,tornado_night.png,weather_night_tornado
+119,night,Night,tropical_storm,Tropical Storm,Тропический шторм,tropical_storm_night.png,weather_night_tropical_storm
+120,night,Night,hurricane,Hurricane,Ураган,hurricane_night.png,weather_night_hurricane
