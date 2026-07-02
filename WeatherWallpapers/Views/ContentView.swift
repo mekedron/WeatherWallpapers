@@ -58,6 +58,20 @@ struct ContentView: View {
                arguments.indices.contains(index + 1) {
                 path.append(arguments[index + 1])
             }
+            // Test hook: `-tab prompts` starts on the prompt library tab.
+            if let index = arguments.firstIndex(of: "-tab"),
+               arguments.indices.contains(index + 1),
+               arguments[index + 1] == "prompts" {
+                tab = .prompts
+            }
+            // Test hook: `-regenOne <Name>` queues the first missing variant
+            // of a set — exercises the full generation pipeline once.
+            if let index = arguments.firstIndex(of: "-regenOne"),
+               arguments.indices.contains(index + 1),
+               let set = store.set(id: arguments[index + 1]),
+               let variant = set.missingVariants.first {
+                GenerationCenter.shared.enqueue(set: set, variants: [variant])
+            }
             // Test hook: `-testIntent <Name>` runs the intent logic and logs the outcome.
             if let index = arguments.firstIndex(of: "-testIntent"),
                arguments.indices.contains(index + 1) {
@@ -100,6 +114,8 @@ struct ContentView: View {
                 .contentShape(Capsule())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(tab == value ? .isSelected : [])
     }
 }
 

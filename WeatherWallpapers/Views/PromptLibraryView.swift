@@ -43,6 +43,20 @@ struct PromptLibraryView: View {
         .sheet(item: $editing) { template in
             PromptTemplateEditor(template: template)
         }
+        #if DEBUG
+        // Test hook: `-editTemplate <id|new>` opens the editor directly.
+        .onAppear {
+            let arguments = ProcessInfo.processInfo.arguments
+            guard let index = arguments.firstIndex(of: "-editTemplate"),
+                  arguments.indices.contains(index + 1) else { return }
+            let arg = arguments[index + 1]
+            if arg == "new" {
+                editing = PromptTemplate(id: UUID().uuidString, name: "", summary: "", text: PromptTemplate.defaultTemplate.text)
+            } else {
+                editing = PromptTemplate.builtIn(id: arg)
+            }
+        }
+        #endif
     }
 
     private func row(_ template: PromptTemplate) -> some View {
@@ -213,6 +227,12 @@ private struct PromptTemplateEditor: View {
                 if testSetID == nil {
                     testSetID = store.sets.first { $0.originalFileName != nil }?.id
                 }
+                #if DEBUG
+                // Test hook: `-autoTest` runs a test generation immediately.
+                if ProcessInfo.processInfo.arguments.contains("-autoTest"), !isTesting {
+                    runTest()
+                }
+                #endif
             }
         }
         #if os(macOS)
