@@ -182,7 +182,7 @@ struct LibraryView: View {
         isTransferring = true
         Task {
             do {
-                try await Task.detached(priority: .userInitiated) {
+                let importedName = try await Task.detached(priority: .userInitiated) {
                     let accessing = url.startAccessingSecurityScopedResource()
                     defer { if accessing { url.stopAccessingSecurityScopedResource() } }
                     let fm = FileManager.default
@@ -208,8 +208,12 @@ struct LibraryView: View {
                         counter += 1
                     }
                     try fm.moveItem(at: source, to: rootURL.appendingPathComponent(folderName))
+                    return folderName
                 }.value
                 store.refresh()
+                // A foreign set may reference the exporter's custom prompt
+                // template — fall back to the default in that case.
+                store.resetUnknownTemplate(setID: importedName)
             } catch {
                 transferError = error.localizedDescription
             }

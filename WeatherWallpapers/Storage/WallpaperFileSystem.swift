@@ -146,6 +146,22 @@ enum WallpaperFileSystem {
         }
     }
 
+    // MARK: - Custom prompt templates (prompts.json in the root, synced with the wallpapers)
+
+    static func loadPromptTemplates(root: URL) -> [PromptTemplate] {
+        let url = root.appendingPathComponent("prompts.json")
+        guard let data = try? Data(contentsOf: url),
+              let templates = try? JSONDecoder().decode([PromptTemplate].self, from: data) else { return [] }
+        return templates
+    }
+
+    static func savePromptTemplates(_ templates: [PromptTemplate], root: URL) {
+        let url = root.appendingPathComponent("prompts.json")
+        if let data = try? JSONEncoder().encode(templates) {
+            try? data.write(to: url, options: .atomic)
+        }
+    }
+
     /// JSON de/encoder date strategy helper for set.json.
     static func metadataDecoder() -> JSONDecoder {
         let decoder = JSONDecoder()

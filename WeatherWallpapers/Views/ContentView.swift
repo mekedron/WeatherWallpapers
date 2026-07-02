@@ -5,13 +5,28 @@ struct ContentView: View {
     @State private var path = NavigationPath()
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var showOnboarding = false
+    @State private var tab: HomeTab = .wallpapers
+
+    private enum HomeTab {
+        case wallpapers, prompts
+    }
 
     var body: some View {
         NavigationStack(path: $path) {
-            LibraryView()
-                .navigationDestination(for: String.self) { setID in
-                    SetDetailView(setID: setID)
+            Group {
+                switch tab {
+                case .wallpapers: LibraryView()
+                case .prompts: PromptLibraryView()
                 }
+            }
+            // Floating switcher between the wallpaper grid and the prompt
+            // library; only on the root screen — pushed views cover it.
+            .safeAreaInset(edge: .bottom) {
+                tabSwitcher
+            }
+            .navigationDestination(for: String.self) { setID in
+                SetDetailView(setID: setID)
+            }
         }
         .onAppear {
             if !hasCompletedOnboarding {
@@ -58,6 +73,33 @@ struct ContentView: View {
             }
         }
         #endif
+    }
+
+    private var tabSwitcher: some View {
+        HStack(spacing: 4) {
+            tabButton(.wallpapers, "Wallpapers", icon: "photo.stack")
+            tabButton(.prompts, "Prompts", icon: "text.quote")
+        }
+        .padding(4)
+        .background(.regularMaterial, in: Capsule())
+        .overlay(Capsule().strokeBorder(.separator, lineWidth: 0.5))
+        .shadow(color: .black.opacity(0.15), radius: 10, y: 3)
+        .padding(.bottom, 10)
+    }
+
+    private func tabButton(_ value: HomeTab, _ title: LocalizedStringKey, icon: String) -> some View {
+        Button {
+            withAnimation(.snappy(duration: 0.2)) { tab = value }
+        } label: {
+            Label(title, systemImage: icon)
+                .font(.subheadline.weight(.medium))
+                .padding(.horizontal, 14)
+                .padding(.vertical, 7)
+                .background(tab == value ? AnyShapeStyle(.tint) : AnyShapeStyle(.clear), in: Capsule())
+                .foregroundStyle(tab == value ? AnyShapeStyle(.white) : AnyShapeStyle(.secondary))
+                .contentShape(Capsule())
+        }
+        .buttonStyle(.plain)
     }
 }
 

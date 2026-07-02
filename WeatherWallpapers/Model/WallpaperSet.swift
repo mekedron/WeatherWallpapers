@@ -6,6 +6,8 @@ struct SetMetadata: Codable, Hashable {
     var providerID: String?
     var createdAt: Date?
     var sourcePrompt: String?
+    /// ID of the prompt template used for variant generation; nil = Classic default.
+    var promptTemplateID: String?
 
     static let fileName = "set.json"
 }

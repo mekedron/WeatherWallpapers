@@ -11,6 +11,7 @@ final class WallpaperStore: ObservableObject {
     @Published private(set) var isUsingICloud = false
     @Published private(set) var isReady = false
     @Published var customDevices: [DeviceSpec] = []
+    @Published var customTemplates: [PromptTemplate] = []
 
     private init() {}
 
@@ -25,6 +26,7 @@ final class WallpaperStore: ObservableObject {
         rootURL = root.url
         isUsingICloud = root.isICloud
         customDevices = WallpaperFileSystem.loadCustomDevices(root: root.url)
+        customTemplates = WallpaperFileSystem.loadPromptTemplates(root: root.url)
         refresh()
         isReady = true
     }
@@ -46,6 +48,41 @@ final class WallpaperStore: ObservableObject {
         customDevices.append(device)
         if let rootURL {
             WallpaperFileSystem.saveCustomDevices(customDevices, root: rootURL)
+        }
+    }
+
+    // MARK: - Prompt templates
+
+    /// Built-in presets first, then the user's own templates.
+    var allTemplates: [PromptTemplate] { PromptTemplate.presets + customTemplates }
+
+    /// Resolves a template ID, falling back to the Classic default for nil
+    /// or dangling IDs (e.g. a template deleted on another device).
+    func template(id: String?) -> PromptTemplate {
+        guard let id else { return .defaultTemplate }
+        return allTemplates.first { $0.id == id } ?? .defaultTemplate
+    }
+
+    /// Adds a new custom template or updates an existing one in place.
+    func saveTemplate(_ template: PromptTemplate) {
+        guard !template.isBuiltIn else { return }
+        if let index = customTemplates.firstIndex(where: { $0.id == template.id }) {
+            customTemplates[index] = template
+        } else {
+            customTemplates.append(template)
+        }
+        persistTemplates()
+    }
+
+    func deleteTemplate(_ template: PromptTemplate) {
+        guard !template.isBuiltIn else { return }
+        customTemplates.removeAll { $0.id == template.id }
+        persistTemplates()
+    }
+
+    private func persistTemplates() {
+        if let rootURL {
+            WallpaperFileSystem.savePromptTemplates(customTemplates, root: rootURL)
         }
     }
 
@@ -79,6 +116,27 @@ final class WallpaperStore: ObservableObject {
     func setProvider(_ providerID: String, for set: WallpaperSet) {
         var meta = set.meta
         meta.providerID = providerID
+        try? WallpaperFileSystem.saveMetadata(meta, in: set.folderURL)
+        refresh()
+    }
+
+    /// Imported sets may reference a prompt template from someone else's
+    /// library — reset such dangling references to the default so the stale
+    /// ID doesn't linger in set.json.
+    func resetUnknownTemplate(setID: String) {
+        guard let set = set(id: setID),
+              let id = set.meta.promptTemplateID,
+              !allTemplates.contains(where: { $0.id == id }) else { return }
+        var meta = set.meta
+        meta.promptTemplateID = nil
+        try? WallpaperFileSystem.saveMetadata(meta, in: set.folderURL)
+        refresh()
+    }
+
+    /// Switches the prompt template used for future generations of a set.
+    func setPromptTemplate(_ templateID: String, for set: WallpaperSet) {
+        var meta = set.meta
+        meta.promptTemplateID = templateID
         try? WallpaperFileSystem.saveMetadata(meta, in: set.folderURL)
         refresh()
     }

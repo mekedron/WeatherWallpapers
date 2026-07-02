@@ -581,12 +581,23 @@ struct VariantPreviewView: View {
                 minHeight: 60,
                 maxHeight: 100
             )
+            // Changing the style here persists to the set — it applies to this
+            // regeneration and every future one.
+            Picker("Prompt Style", selection: Binding(
+                get: { store.template(id: set.meta.promptTemplateID).id },
+                set: { store.setPromptTemplate($0, for: set) }
+            )) {
+                ForEach(store.allTemplates) { template in
+                    Text(template.name).tag(template.id)
+                }
+            }
             HStack {
                 Spacer()
                 Button {
                     showPromptPopover = false
                     center.clearFailures(setID: set.id)
-                    center.enqueue(set: set, variants: [variant], extraPrompt: extraPrompt)
+                    // Re-fetch the set: the picker above may have just rewritten its metadata.
+                    center.enqueue(set: store.set(id: setID) ?? set, variants: [variant], extraPrompt: extraPrompt)
                 } label: {
                     Label("Regenerate", systemImage: "arrow.clockwise")
                 }

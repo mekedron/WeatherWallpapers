@@ -35,6 +35,7 @@ struct NewSetFlow: View {
 
     // Step 3
     @State private var providerID = ProviderRegistry.defaultProviderID
+    @State private var templateID = PromptTemplate.defaultID
     @State private var creationError: String?
 
     private var selectedDevice: DeviceSpec? {
@@ -260,6 +261,16 @@ struct NewSetFlow: View {
                 LabeledContent("Images to generate", value: "\(WallpaperVariant.all.count)")
             }
 
+            Section {
+                Picker("Prompt Style", selection: $templateID) {
+                    ForEach(store.allTemplates) { template in
+                        Text(template.name).tag(template.id)
+                    }
+                }
+            } footer: {
+                Text(store.template(id: templateID).summary)
+            }
+
             if let provider = ProviderRegistry.provider(id: providerID), !KeychainStore.hasAPIKey(for: provider.id) {
                 Section {
                     Label("No API key for \(provider.displayName). Add it in Settings.", systemImage: "key.slash")
@@ -289,7 +300,8 @@ struct NewSetFlow: View {
                 device: selectedDevice,
                 providerID: providerID,
                 createdAt: Date(),
-                sourcePrompt: generationPrompt.isEmpty ? nil : generationPrompt
+                sourcePrompt: generationPrompt.isEmpty ? nil : generationPrompt,
+                promptTemplateID: templateID
             )
             let set = try store.createSet(
                 name: name,

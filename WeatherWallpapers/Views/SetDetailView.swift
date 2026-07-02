@@ -94,6 +94,21 @@ struct SetDetailView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
+                    Menu {
+                        templateButtons(for: set)
+                    } label: {
+                        HStack(spacing: 3) {
+                            Label(store.template(id: set.meta.promptTemplateID).name, systemImage: "text.quote")
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.caption2)
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    }
+                    .menuStyle(.button)
+                    .buttonStyle(.plain)
+                    .menuIndicator(.hidden)
+                    .fixedSize()
                     if !set.usage.records.isEmpty {
                         Button {
                             showBudget = true
@@ -143,6 +158,24 @@ struct SetDetailView: View {
                         }
                         .buttonStyle(.bordered)
                     }
+                }
+            }
+        }
+    }
+
+    /// One entry per template; the current one is resolved (dangling IDs from
+    /// imported sets show as Classic) so the checkmark never disappears.
+    @ViewBuilder
+    private func templateButtons(for set: WallpaperSet) -> some View {
+        let currentID = store.template(id: set.meta.promptTemplateID).id
+        ForEach(store.allTemplates) { template in
+            Button {
+                store.setPromptTemplate(template.id, for: set)
+            } label: {
+                if currentID == template.id {
+                    Label(template.name, systemImage: "checkmark")
+                } else {
+                    Text(template.name)
                 }
             }
         }
@@ -276,6 +309,11 @@ struct SetDetailView: View {
                         }
                     } label: {
                         Label("Provider", systemImage: "wand.and.stars")
+                    }
+                    Menu {
+                        templateButtons(for: set)
+                    } label: {
+                        Label("Prompt Style", systemImage: "text.quote")
                     }
                     Divider()
                     Button(role: .destructive) {

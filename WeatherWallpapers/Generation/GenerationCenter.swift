@@ -22,6 +22,8 @@ final class GenerationCenter: ObservableObject {
         let originalURL: URL
         let targetSize: CGSize
         let providerID: String
+        /// Resolved once per batch from the set's metadata.
+        let promptTemplate: PromptTemplate
         /// Read once per batch — every Keychain read may prompt the user.
         let apiKey: String?
         let upscalerID: String
@@ -50,6 +52,7 @@ final class GenerationCenter: ObservableObject {
             originalURL: originalURL,
             targetSize: set.meta.device?.pixelSize ?? CGSize(width: 1024, height: 1024),
             providerID: providerID,
+            promptTemplate: WallpaperStore.shared.template(id: set.meta.promptTemplateID),
             apiKey: KeychainStore.apiKey(for: providerID),
             upscalerID: upscalerID,
             upscalerKey: upscalerNeedsKey ? KeychainStore.apiKey(for: upscalerID) : nil
@@ -153,7 +156,7 @@ final class GenerationCenter: ObservableObject {
         let original = try Data(contentsOf: context.originalURL)
         try Task.checkCancellation()
 
-        let prompt = PromptBuilder.editPrompt(for: key.variant, extraInstructions: extraPrompt)
+        let prompt = PromptBuilder.editPrompt(for: key.variant, template: context.promptTemplate, extraInstructions: extraPrompt)
         var image: Data
         do {
             let result = try await provider.edit(
