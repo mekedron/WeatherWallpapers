@@ -19,3 +19,6 @@ build/
 # Swift Package Manager
 .build/
 .swiftpm/
+
+# Generated demo videos (regenerate with Demo/generate_demo.sh)
+Docs/*.mp4

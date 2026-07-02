@@ -2,6 +2,18 @@
 
 A free, open-source app for iPhone, iPad and Mac that generates **120 wallpaper variants** from a single artwork — one for every combination of 30 weather conditions × 4 times of day — and serves the right one to the Shortcuts app so your wallpaper always matches the sky outside.
 
+<table align="center">
+<tr>
+<td width="360">
+
+https://github.com/user-attachments/assets/b3653fb8-9e7d-49ee-8e66-f78b6256a9c0
+
+</td>
+</tr>
+</table>
+
+<p align="center"><em>Every weather condition cycling through a full day, composited behind a real home screen. Generated with <a href="Demo/generate_demo.sh"><code>Demo/generate_demo.sh</code></a> — see <a href="Demo/README.md"><code>Demo/README.md</code></a> to regenerate it for your own wallpaper set.</em></p>
+
 ## How it works
 
 1. **Create a wallpaper set.** Pick a source image from Photos or Files, or generate one with AI from any prompt (regenerate until you like it).
@@ -40,10 +52,6 @@ No database. Each wallpaper set is a plain folder of PNGs (`Clear Day.png`, `Sno
 Or open `WeatherWallpapers.xcodeproj` in Xcode 16+ and run on iOS 17+ / macOS 14+.
 
 **Signing note:** iCloud entitlements are restricted, so macOS **Debug** builds are signed ad-hoc without iCloud and use local storage — they run out of the box, no team required. For iCloud sync on the Mac, set your development team in Signing & Capabilities and build the **Release** configuration (Debug on iOS simulators is unaffected).
-
-## Languages
-
-English and Russian.
 
 ## License
 
