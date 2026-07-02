@@ -62,6 +62,8 @@ struct SettingsView: View {
                     Text("HEIC keeps wallpapers 5–8× smaller with no visible quality loss. Providers generate ~1.5 MP images; upscaling brings them to the exact screen resolution of the chosen device. Applies to newly generated images.")
                 }
 
+                GlobalSpendingSection(sets: store.sets)
+
                 Section("Location") {
                     LocationRow()
                 }

@@ -1,6 +1,75 @@
 import SwiftUI
 import ImageIO
 
+/// "Title — $X" row with a "N calls · M tokens" caption, shared by the
+/// budget breakdowns in Settings and the per-set sheet.
+struct UsageBreakdownRow: View {
+    let title: String
+    let records: [UsageRecord]
+
+    var body: some View {
+        LabeledContent {
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(UsageFormat.cost(records.totalCost))
+                    .monospacedDigit()
+                Text("\(records.count) calls · \(UsageFormat.tokens(records.totalTokens)) tokens")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        } label: {
+            Text(title)
+        }
+    }
+}
+
+/// Total spending across every set — a Form section for Settings.
+struct GlobalSpendingSection: View {
+    let sets: [WallpaperSet]
+
+    private var spendingSets: [WallpaperSet] {
+        sets.filter { !$0.usage.records.isEmpty }
+    }
+
+    private var records: [UsageRecord] {
+        spendingSets.flatMap { $0.usage.records }
+    }
+
+    private var providerIDs: [String] {
+        var seen = Set<String>()
+        return records.compactMap { seen.insert($0.provider).inserted ? $0.provider : nil }
+    }
+
+    var body: some View {
+        Section {
+            if records.isEmpty {
+                Text("No billed API calls yet.")
+                    .foregroundStyle(.secondary)
+            } else {
+                LabeledContent("Total Cost", value: UsageFormat.cost(records.totalCost))
+                LabeledContent("API Calls", value: "\(records.count)")
+                LabeledContent("Tokens", value: "\(UsageFormat.tokens(records.totalInputTokens)) in · \(UsageFormat.tokens(records.totalOutputTokens)) out")
+
+                ForEach(providerIDs, id: \.self) { providerID in
+                    UsageBreakdownRow(
+                        title: SetBudgetView.providerName(providerID),
+                        records: records.filter { $0.provider == providerID }
+                    )
+                }
+
+                DisclosureGroup("By Set") {
+                    ForEach(spendingSets.sorted { $0.usage.totalCost > $1.usage.totalCost }) { set in
+                        UsageBreakdownRow(title: set.name, records: set.usage.records)
+                    }
+                }
+            }
+        } header: {
+            Text("Spending")
+        } footer: {
+            Text("Estimated from provider price lists and the token usage reported by each API call, across all wallpaper sets on this device.")
+        }
+    }
+}
+
 /// Full generation budget of a set: totals, then breakdowns by category
 /// and by provider. Every billed API call is on the books, including
 /// failed attempts and discarded regenerations.
@@ -28,14 +97,14 @@ struct SetBudgetView: View {
                     ForEach(UsageRecord.Category.allCases, id: \.self) { category in
                         let records = ledger.records(category: category)
                         if !records.isEmpty {
-                            breakdownRow(title: category.localizedName, records: records)
+                            UsageBreakdownRow(title: category.localizedName, records: records)
                         }
                     }
                 }
 
                 Section("By Provider") {
                     ForEach(ledger.providerIDs, id: \.self) { providerID in
-                        breakdownRow(
+                        UsageBreakdownRow(
                             title: Self.providerName(providerID),
                             records: ledger.records(provider: providerID)
                         )
@@ -56,20 +125,6 @@ struct SetBudgetView: View {
         #if os(macOS)
         .frame(minWidth: 400, minHeight: 460)
         #endif
-    }
-
-    private func breakdownRow(title: String, records: [UsageRecord]) -> some View {
-        LabeledContent {
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(UsageFormat.cost(records.totalCost))
-                    .monospacedDigit()
-                Text("\(records.count) calls · \(UsageFormat.tokens(records.totalTokens)) tokens")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
-        } label: {
-            Text(title)
-        }
     }
 
     static func providerName(_ id: String) -> String {
