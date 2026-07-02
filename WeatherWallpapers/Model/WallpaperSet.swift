@@ -19,6 +19,8 @@ struct WallpaperSet: Identifiable, Hashable {
     var existingFiles: Set<String>
     /// File name of the original/source image ("!Original.png" etc.), if present.
     var originalFileName: String?
+    /// Billable API calls made for this set (`usage.json`).
+    var usage = UsageLedger()
 
     var id: String { name }
     var name: String { folderURL.lastPathComponent }

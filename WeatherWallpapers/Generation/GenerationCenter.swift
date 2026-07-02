@@ -154,12 +154,31 @@ final class GenerationCenter: ObservableObject {
         try Task.checkCancellation()
 
         let prompt = PromptBuilder.editPrompt(for: key.variant, extraInstructions: extraPrompt)
-        var image = try await provider.edit(
-            image: original,
-            prompt: prompt,
-            targetSize: context.targetSize,
-            apiKey: apiKey
-        )
+        var image: Data
+        do {
+            let result = try await provider.edit(
+                image: original,
+                prompt: prompt,
+                targetSize: context.targetSize,
+                apiKey: apiKey
+            )
+            image = result.data
+            if let usage = result.usage {
+                await UsageLedgerStore.shared.append(
+                    [UsageRecord(category: .variantImage, variant: key.variant.baseName, usage: usage)],
+                    folderURL: context.folderURL
+                )
+            }
+        } catch {
+            // Failed calls can still bill tokens — keep them on the books.
+            if let usage = (error as? ProviderError)?.usage {
+                await UsageLedgerStore.shared.append(
+                    [UsageRecord(category: .variantImage, variant: key.variant.baseName, usage: usage, failed: true)],
+                    folderURL: context.folderURL
+                )
+            }
+            throw error
+        }
         try Task.checkCancellation()
 
         // Optional AI upscale pass; a failure here falls back to the native
@@ -168,7 +187,14 @@ final class GenerationCenter: ObservableObject {
            let upscaler = UpscalerRegistry.provider(id: context.upscalerID),
            upscaler.requiresAPIKey {
             do {
-                image = try await upscaler.upscale(image, to: context.targetSize, apiKey: context.upscalerKey)
+                let result = try await upscaler.upscale(image, to: context.targetSize, apiKey: context.upscalerKey)
+                image = result.data
+                if let usage = result.usage {
+                    await UsageLedgerStore.shared.append(
+                        [UsageRecord(category: .upscale, variant: key.variant.baseName, usage: usage)],
+                        folderURL: context.folderURL
+                    )
+                }
             } catch {
                 WallpaperResolver.logger.error("AI upscale failed, using native fit: \(error.localizedDescription, privacy: .public)")
             }

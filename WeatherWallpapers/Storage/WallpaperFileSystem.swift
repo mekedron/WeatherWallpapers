@@ -67,7 +67,8 @@ enum WallpaperFileSystem {
                 original = name
             }
         }
-        return WallpaperSet(folderURL: folderURL, meta: meta, existingFiles: files, originalFileName: original)
+        let usage = loadLedger(folderURL: folderURL)
+        return WallpaperSet(folderURL: folderURL, meta: meta, existingFiles: files, originalFileName: original, usage: usage)
     }
 
     static func normalizedName(_ rawName: String) -> String {
@@ -83,6 +84,24 @@ enum WallpaperFileSystem {
         encoder.dateEncodingStrategy = .iso8601
         let data = try encoder.encode(meta)
         try data.write(to: folderURL.appendingPathComponent(SetMetadata.fileName), options: .atomic)
+    }
+
+    /// Reads the per-set ledger of billable API calls (`usage.json`).
+    static func loadLedger(folderURL: URL) -> UsageLedger {
+        let url = folderURL.appendingPathComponent(UsageLedger.fileName)
+        guard let data = try? Data(contentsOf: url),
+              let ledger = try? metadataDecoder().decode(UsageLedger.self, from: data) else {
+            return UsageLedger()
+        }
+        return ledger
+    }
+
+    static func saveLedger(_ ledger: UsageLedger, in folderURL: URL) throws {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(ledger)
+        try data.write(to: folderURL.appendingPathComponent(UsageLedger.fileName), options: .atomic)
     }
 
     /// Makes sure an iCloud file is actually on disk, triggering a download if needed.

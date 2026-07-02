@@ -1,5 +1,11 @@
 import Foundation
 
+/// Image bytes plus the API usage billed to produce them.
+struct ProviderResult: Sendable {
+    let data: Data
+    var usage: APICallUsage?
+}
+
 /// An image-generation backend (OpenAI, Nano Banana, …).
 protocol ImageProvider: Sendable {
     var id: String { get }
@@ -8,9 +14,9 @@ protocol ImageProvider: Sendable {
     var apiKeyURL: URL { get }
 
     /// Text → image, for creating the source artwork.
-    func generate(prompt: String, targetSize: CGSize, apiKey: String) async throws -> Data
+    func generate(prompt: String, targetSize: CGSize, apiKey: String) async throws -> ProviderResult
     /// Image + text → image, for producing the 120 weather/time variants.
-    func edit(image: Data, prompt: String, targetSize: CGSize, apiKey: String) async throws -> Data
+    func edit(image: Data, prompt: String, targetSize: CGSize, apiKey: String) async throws -> ProviderResult
 }
 
 enum ProviderRegistry {
@@ -28,6 +34,9 @@ enum ProviderRegistry {
 
 struct ProviderError: LocalizedError {
     let message: String
+    /// Usage billed by the failed call(s) — some providers charge tokens even
+    /// when no image comes back (e.g. Gemini safety blocks).
+    var usage: APICallUsage? = nil
     var errorDescription: String? { message }
 
     static func missingKey(providerName: String) -> ProviderError {

@@ -11,7 +11,7 @@ protocol UpscaleProvider: Sendable {
 
     /// Returns image data at (or above) the target size. The storage pipeline
     /// does the final exact-fit crop, so overshooting is fine.
-    func upscale(_ image: Data, to target: CGSize, apiKey: String?) async throws -> Data
+    func upscale(_ image: Data, to target: CGSize, apiKey: String?) async throws -> ProviderResult
 }
 
 enum UpscalerRegistry {
@@ -39,8 +39,8 @@ struct NativeUpscaler: UpscaleProvider {
     let requiresAPIKey = false
     let apiKeyURL: URL? = nil
 
-    func upscale(_ image: Data, to target: CGSize, apiKey: String?) async throws -> Data {
-        image
+    func upscale(_ image: Data, to target: CGSize, apiKey: String?) async throws -> ProviderResult {
+        ProviderResult(data: image)
     }
 }
 
@@ -53,7 +53,7 @@ struct StabilityUpscaler: UpscaleProvider {
 
     private let endpoint = URL(string: "https://api.stability.ai/v2beta/stable-image/upscale/fast")!
 
-    func upscale(_ image: Data, to target: CGSize, apiKey: String?) async throws -> Data {
+    func upscale(_ image: Data, to target: CGSize, apiKey: String?) async throws -> ProviderResult {
         guard let apiKey, !apiKey.isEmpty else {
             throw ProviderError.missingKey(providerName: "Stability AI")
         }
@@ -83,9 +83,13 @@ struct StabilityUpscaler: UpscaleProvider {
             let errors: [String]?
             let message: String?
         }
-        return try await ProviderHTTP.data(for: request) { data in
+        let data = try await ProviderHTTP.data(for: request) { data in
             let decoded = try? JSONDecoder().decode(APIError.self, from: data)
             return decoded?.errors?.joined(separator: "; ") ?? decoded?.message
         }
+        // The response carries no usage info — the Fast Upscaler has a flat
+        // published price per call.
+        let usage = APICallUsage(provider: id, cost: ProviderPricing.stabilityFastUpscale)
+        return ProviderResult(data: data, usage: usage)
     }
 }

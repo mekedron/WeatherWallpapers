@@ -18,7 +18,7 @@ struct OpenAIProvider: ImageProvider {
         return "1024x1024"
     }
 
-    func generate(prompt: String, targetSize: CGSize, apiKey: String) async throws -> Data {
+    func generate(prompt: String, targetSize: CGSize, apiKey: String) async throws -> ProviderResult {
         var request = URLRequest(url: URL(string: "https://api.openai.com/v1/images/generations")!)
         request.httpMethod = "POST"
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
@@ -33,7 +33,7 @@ struct OpenAIProvider: ImageProvider {
         return try await imageFromResponse(request: request)
     }
 
-    func edit(image: Data, prompt: String, targetSize: CGSize, apiKey: String) async throws -> Data {
+    func edit(image: Data, prompt: String, targetSize: CGSize, apiKey: String) async throws -> ProviderResult {
         var request = URLRequest(url: URL(string: "https://api.openai.com/v1/images/edits")!)
         request.httpMethod = "POST"
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
@@ -64,10 +64,21 @@ struct OpenAIProvider: ImageProvider {
         return try await imageFromResponse(request: request)
     }
 
-    private func imageFromResponse(request: URLRequest) async throws -> Data {
+    private struct ImageUsage: Decodable {
+        struct InputDetails: Decodable {
+            let text_tokens: Int?
+            let image_tokens: Int?
+        }
+        let input_tokens: Int?
+        let output_tokens: Int?
+        let input_tokens_details: InputDetails?
+    }
+
+    private func imageFromResponse(request: URLRequest) async throws -> ProviderResult {
         struct Response: Decodable {
             struct Item: Decodable { let b64_json: String? }
             let data: [Item]
+            let usage: ImageUsage?
         }
         struct APIError: Decodable {
             struct Inner: Decodable { let message: String }
@@ -77,9 +88,28 @@ struct OpenAIProvider: ImageProvider {
             (try? JSONDecoder().decode(APIError.self, from: body))?.error.message
         }
         let decoded = try JSONDecoder().decode(Response.self, from: data)
+        let billed = usage(from: decoded.usage)
         guard let b64 = decoded.data.first?.b64_json, let image = Data(base64Encoded: b64) else {
-            throw ProviderError(message: String(localized: "The provider returned no image."))
+            throw ProviderError(message: String(localized: "The provider returned no image."), usage: billed)
         }
-        return image
+        return ProviderResult(data: image, usage: billed)
+    }
+
+    /// Text and image input tokens are priced differently; without the
+    /// breakdown, everything is billed at the text rate.
+    private func usage(from usage: ImageUsage?) -> APICallUsage? {
+        guard let usage else { return nil }
+        let input = usage.input_tokens ?? 0
+        let imageInput = usage.input_tokens_details?.image_tokens ?? 0
+        let textInput = usage.input_tokens_details?.text_tokens ?? (input - imageInput)
+        let output = usage.output_tokens ?? 0
+        return APICallUsage(
+            provider: id,
+            inputTokens: usage.input_tokens,
+            outputTokens: usage.output_tokens,
+            cost: Double(textInput) * ProviderPricing.openAITextInputPerMTok / 1_000_000
+                + Double(imageInput) * ProviderPricing.openAIImageInputPerMTok / 1_000_000
+                + Double(output) * ProviderPricing.openAIOutputPerMTok / 1_000_000
+        )
     }
 }

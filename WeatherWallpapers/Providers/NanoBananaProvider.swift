@@ -21,11 +21,11 @@ struct NanoBananaProvider: ImageProvider {
         return Self.supportedAspects.min { abs($0.1 - ratio) < abs($1.1 - ratio) }!.0
     }
 
-    func generate(prompt: String, targetSize: CGSize, apiKey: String) async throws -> Data {
+    func generate(prompt: String, targetSize: CGSize, apiKey: String) async throws -> ProviderResult {
         try await request(parts: [["text": prompt]], targetSize: targetSize, apiKey: apiKey)
     }
 
-    func edit(image: Data, prompt: String, targetSize: CGSize, apiKey: String) async throws -> Data {
+    func edit(image: Data, prompt: String, targetSize: CGSize, apiKey: String) async throws -> ProviderResult {
         let parts: [[String: Any]] = [
             ["text": prompt],
             ["inlineData": ["mimeType": ImageUtil.mimeType(for: image), "data": image.base64EncodedString()]],
@@ -35,24 +35,49 @@ struct NanoBananaProvider: ImageProvider {
 
     /// IMAGE_OTHER failures are often transient (the safety filter fires
     /// nondeterministically on borderline images) — retry a couple of times
-    /// before giving up.
-    private func request(parts: [[String: Any]], targetSize: CGSize, apiKey: String) async throws -> Data {
-        var lastError: Error?
+    /// before giving up. Failed attempts still bill tokens, so their usage is
+    /// folded into whatever this request ultimately returns or throws.
+    private func request(parts: [[String: Any]], targetSize: CGSize, apiKey: String) async throws -> ProviderResult {
+        var lastError: ProviderError?
+        var billedFailures: APICallUsage?
         for attempt in 0..<3 {
             if attempt > 0 {
                 try await Task.sleep(nanoseconds: UInt64(attempt) * 1_500_000_000)
             }
             do {
-                return try await requestOnce(parts: parts, targetSize: targetSize, apiKey: apiKey)
+                var result = try await requestOnce(parts: parts, targetSize: targetSize, apiKey: apiKey)
+                result.usage = APICallUsage.merge(billedFailures, result.usage)
+                return result
             } catch let error as ProviderError where error.message.contains("IMAGE_") {
+                billedFailures = APICallUsage.merge(billedFailures, error.usage)
                 lastError = error
                 continue
             }
         }
-        throw lastError ?? ProviderError(message: String(localized: "The provider returned no image."))
+        var final = lastError ?? ProviderError(message: String(localized: "The provider returned no image."))
+        final.usage = billedFailures
+        throw final
     }
 
-    private func requestOnce(parts: [[String: Any]], targetSize: CGSize, apiKey: String) async throws -> Data {
+    private func usage(from meta: GeminiUsageMetadata?) -> APICallUsage? {
+        guard let meta else { return nil }
+        let input = meta.promptTokenCount ?? 0
+        let output = meta.candidatesTokenCount ?? 0
+        return APICallUsage(
+            provider: id,
+            inputTokens: meta.promptTokenCount,
+            outputTokens: meta.candidatesTokenCount,
+            cost: Double(input) * ProviderPricing.geminiInputPerMTok / 1_000_000
+                + Double(output) * ProviderPricing.geminiOutputPerMTok / 1_000_000
+        )
+    }
+
+    private struct GeminiUsageMetadata: Decodable {
+        let promptTokenCount: Int?
+        let candidatesTokenCount: Int?
+    }
+
+    private func requestOnce(parts: [[String: Any]], targetSize: CGSize, apiKey: String) async throws -> ProviderResult {
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"
         request.setValue(apiKey, forHTTPHeaderField: "x-goog-api-key")
@@ -88,12 +113,14 @@ struct NanoBananaProvider: ImageProvider {
             struct PromptFeedback: Decodable { let blockReason: String? }
             let candidates: [Candidate]?
             let promptFeedback: PromptFeedback?
+            let usageMetadata: GeminiUsageMetadata?
         }
         let decoded = try JSONDecoder().decode(Response.self, from: data)
+        let billed = usage(from: decoded.usageMetadata)
         let parts = decoded.candidates?.compactMap { $0.content?.parts }.flatMap { $0 } ?? []
         if let inline = parts.compactMap({ $0.inlineData }).first,
            let image = Data(base64Encoded: inline.data) {
-            return image
+            return ProviderResult(data: image, usage: billed)
         }
 
         // No image — surface whatever the model said instead, so the failure
@@ -111,6 +138,6 @@ struct NanoBananaProvider: ImageProvider {
             details.append("blocked: \(blocked)")
         }
         let suffix = details.isEmpty ? "" : " — " + details.joined(separator: "; ").prefix(400)
-        throw ProviderError(message: String(localized: "The provider returned no image.") + suffix)
+        throw ProviderError(message: String(localized: "The provider returned no image.") + suffix, usage: billed)
     }
 }

@@ -29,6 +29,9 @@ struct NewSetFlow: View {
     @State private var generationPrompt = ""
     @State private var isGenerating = false
     @State private var generationError: String?
+    /// Billed source-image generations (every attempt, kept or not) — written
+    /// to the set's ledger once the folder exists.
+    @State private var pendingUsage: [UsageRecord] = []
 
     // Step 3
     @State private var providerID = ProviderRegistry.defaultProviderID
@@ -225,9 +228,15 @@ struct NewSetFlow: View {
         generationError = nil
         Task {
             do {
-                let data = try await provider.generate(prompt: prompt, targetSize: size, apiKey: apiKey)
-                originalData = data
+                let result = try await provider.generate(prompt: prompt, targetSize: size, apiKey: apiKey)
+                originalData = result.data
+                if let usage = result.usage {
+                    pendingUsage.append(UsageRecord(category: .sourceImage, usage: usage))
+                }
             } catch {
+                if let usage = (error as? ProviderError)?.usage {
+                    pendingUsage.append(UsageRecord(category: .sourceImage, usage: usage, failed: true))
+                }
                 generationError = error.localizedDescription
             }
             isGenerating = false
@@ -288,6 +297,14 @@ struct NewSetFlow: View {
                 fileExtension: ImageUtil.fileExtension(for: originalData),
                 meta: meta
             )
+            if !pendingUsage.isEmpty {
+                let records = pendingUsage
+                let folderURL = set.folderURL
+                Task {
+                    await UsageLedgerStore.shared.append(records, folderURL: folderURL)
+                    WallpaperStore.shared.refresh()
+                }
+            }
             center.enqueue(set: set, variants: WallpaperVariant.all)
             dismiss()
         } catch {

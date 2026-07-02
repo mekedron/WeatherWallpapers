@@ -14,6 +14,7 @@ struct VariantPreviewView: View {
     @State private var current: WallpaperVariant?
     @State private var extraPrompt = ""
     @State private var showPromptPopover = false
+    @State private var showDetails = false
 
     // Zoom state for the current page.
     @State private var zoom: CGFloat = 1
@@ -53,6 +54,12 @@ struct VariantPreviewView: View {
                     topBar(set)
                     pager(set)
                     bottomPanel(set)
+                }
+                .sheet(isPresented: $showDetails) {
+                    VariantDetailsView(set: set, variant: variant)
+                        #if os(iOS)
+                        .presentationDetents([.medium, .large])
+                        #endif
                 }
             }
         }
@@ -457,10 +464,17 @@ struct VariantPreviewView: View {
                     Label(variant.time.localizedName, systemImage: variant.time.symbolName)
                 }
                 .font(.headline)
-                Text(verbatim: "\(currentIndex + 1) / \(WallpaperVariant.all.count)")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
+                HStack(spacing: 6) {
+                    Text(verbatim: "\(currentIndex + 1) / \(WallpaperVariant.all.count)")
+                    // iPhone keeps the bar minimal — size and cost live in
+                    // the Details sheet behind the ellipsis menu.
+                    if showsInlineInfo, let info = inlineInfo(set) {
+                        Text(verbatim: "· \(info)")
+                    }
+                }
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .monospacedDigit()
             }
 
             Spacer()
@@ -474,10 +488,40 @@ struct VariantPreviewView: View {
         .padding(.vertical, 10)
     }
 
+    private var showsInlineInfo: Bool {
+        #if os(macOS)
+        true
+        #else
+        UIDevice.current.userInterfaceIdiom == .pad
+        #endif
+    }
+
+    /// "2.4 MB · $0.078" for the current image, nil when there is nothing to show.
+    private func inlineInfo(_ set: WallpaperSet) -> String? {
+        var parts: [String] = []
+        if set.hasImage(for: variant),
+           let size = try? FileManager.default.attributesOfItem(atPath: set.url(for: variant).path)[.size] as? Int {
+            parts.append(UsageFormat.fileSize(size))
+        }
+        let records = set.usage.records(variant: variant.baseName)
+        if !records.isEmpty {
+            parts.append(UsageFormat.cost(records.totalCost))
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
+    }
+
     private func actionsMenu(_ set: WallpaperSet) -> some View {
         let state = center.state(setID: setID, variant: variant)
         let busy = state == .running || state == .queued
         return Menu {
+            Button {
+                showDetails = true
+            } label: {
+                Label("Details…", systemImage: "info.circle")
+            }
+
+            Divider()
+
             Button {
                 center.clearFailures(setID: set.id)
                 center.enqueue(set: set, variants: [variant])

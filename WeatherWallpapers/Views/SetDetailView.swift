@@ -15,6 +15,7 @@ struct SetDetailView: View {
     @State private var selection = Set<WallpaperVariant>()
     @State private var previewVariant: WallpaperVariant?
     @State private var confirmRegenerateAll = false
+    @State private var showBudget = false
 
     private var set: WallpaperSet? { store.set(id: setID) }
 
@@ -55,6 +56,9 @@ struct SetDetailView: View {
             VariantPreviewView(setID: set.id, variant: variant)
         }
         #endif
+        .sheet(isPresented: $showBudget) {
+            SetBudgetView(set: set)
+        }
         .confirmationDialog(
             "Regenerate all 120 images?",
             isPresented: $confirmRegenerateAll,
@@ -89,6 +93,21 @@ struct SetDetailView: View {
                         Label(provider.displayName, systemImage: "wand.and.stars")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                    }
+                    if !set.usage.records.isEmpty {
+                        Button {
+                            showBudget = true
+                        } label: {
+                            Label {
+                                Text(verbatim: "\(UsageFormat.cost(set.usage.totalCost)) · \(UsageFormat.tokens(set.usage.totalTokens)) tokens")
+                                    .underline()
+                            } icon: {
+                                Image(systemName: "dollarsign.circle")
+                            }
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
                     }
                     Text("\(set.completedCount)/\(WallpaperVariant.all.count) images")
                         .font(.title3.bold())
