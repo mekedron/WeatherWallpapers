@@ -8,6 +8,10 @@ struct OnboardingView: View {
 
     @State private var page = 0
     @State private var locationGranted = false
+    @State private var language = AppLanguage.current
+    #if os(iOS)
+    @State private var languageChanged = false
+    #endif
 
     private let pageCount = 3
 
@@ -31,8 +35,51 @@ struct OnboardingView: View {
         .frame(minWidth: 560, minHeight: 560)
         #endif
         .background(.background)
+        .overlay(alignment: .topTrailing) {
+            languageSwitcher
+                .padding(16)
+        }
         .onAppear {
             locationGranted = Self.isAuthorized(LocationProvider.shared.authorizationStatus)
+        }
+    }
+
+    /// Compact language menu in the corner of the first screen. On the Mac
+    /// the app relaunches straight back into onboarding in the new language.
+    private var languageSwitcher: some View {
+        VStack(alignment: .trailing, spacing: 6) {
+            Menu {
+                Picker("Language", selection: $language) {
+                    ForEach(AppLanguage.allCases) { option in
+                        option.displayName.tag(option)
+                    }
+                }
+                .pickerStyle(.inline)
+            } label: {
+                Label {
+                    language.displayName
+                } icon: {
+                    Image(systemName: "globe")
+                }
+                .font(.subheadline)
+            }
+            .fixedSize()
+            .onChange(of: language) {
+                guard language != AppLanguage.current else { return }
+                AppLanguage.apply(language)
+                #if os(iOS)
+                languageChanged = true
+                #else
+                AppLanguage.relaunch()
+                #endif
+            }
+            #if os(iOS)
+            if languageChanged {
+                Text("Applies after the app restarts.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            #endif
         }
     }
 

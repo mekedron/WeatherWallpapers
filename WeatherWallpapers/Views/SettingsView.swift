@@ -10,78 +10,117 @@ struct SettingsView: View {
 
     var body: some View {
         #if os(macOS)
-        settingsForm
+        // Toolbar-style tabs, the native look for Mac settings windows.
+        TabView {
+            Form {
+                generationSection
+                languageSection
+                Section("Location") { LocationRow() }
+                aboutSection
+            }
             .formStyle(.grouped)
-            .frame(width: 560, height: 620)
+            .tabItem { Label("General", systemImage: "gearshape") }
+
+            Form { apiKeysSection }
+                .formStyle(.grouped)
+                .tabItem { Label("API Keys", systemImage: "key.fill") }
+
+            Form { GlobalSpendingSection(sets: store.sets) }
+                .formStyle(.grouped)
+                .tabItem { Label("Spending", systemImage: "dollarsign.circle") }
+
+            Form { WeatherStatsSection() }
+                .formStyle(.grouped)
+                .tabItem { Label("Weather", systemImage: "cloud.sun") }
+
+            Form { StorageSection() }
+                .formStyle(.grouped)
+                .tabItem { Label("Storage", systemImage: "internaldrive") }
+        }
+        .frame(width: 560, height: 620)
         #else
         NavigationStack {
-            settingsForm
-                .formStyle(.grouped)
-                .navigationTitle("Settings")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Done") { dismiss() }
-                    }
+            Form {
+                apiKeysSection
+                generationSection
+                languageSection
+                GlobalSpendingSection(sets: store.sets)
+                WeatherStatsSection()
+                Section("Location") { LocationRow() }
+                StorageSection()
+                aboutSection
+            }
+            .formStyle(.grouped)
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
                 }
+            }
         }
         #endif
     }
 
-    private var settingsForm: some View {
-            Form {
-                Section {
-                    ForEach(ProviderRegistry.all, id: \.id) { provider in
-                        APIKeyRow(keyID: provider.id, name: provider.displayName, keyURL: provider.apiKeyURL)
+    // MARK: - Sections
+
+    private var apiKeysSection: some View {
+        Section {
+            ForEach(ProviderRegistry.all, id: \.id) { provider in
+                APIKeyRow(keyID: provider.id, name: provider.displayName, keyURL: provider.apiKeyURL)
+            }
+            ForEach(UpscalerRegistry.all.filter(\.requiresAPIKey), id: \.id) { upscaler in
+                APIKeyRow(keyID: upscaler.id, name: upscaler.displayName, keyURL: upscaler.apiKeyURL)
+            }
+        } header: {
+            Text("API Keys")
+        } footer: {
+            Text("Keys are stored in the Keychain and never leave your devices. The app has no backend and no analytics.")
+        }
+    }
+
+    private var generationSection: some View {
+        Section {
+            Picker("Image Format", selection: $imageFormat) {
+                Text("HEIC — compact (recommended)").tag("heic")
+                Text("PNG — original").tag("png")
+            }
+            Toggle("Upscale to device resolution", isOn: $upscaleEnabled)
+            if upscaleEnabled {
+                Picker("Upscaler", selection: $upscalerID) {
+                    ForEach(UpscalerRegistry.all, id: \.id) { upscaler in
+                        Text(upscaler.displayName).tag(upscaler.id)
                     }
-                    ForEach(UpscalerRegistry.all.filter(\.requiresAPIKey), id: \.id) { upscaler in
-                        APIKeyRow(keyID: upscaler.id, name: upscaler.displayName, keyURL: upscaler.apiKeyURL)
-                    }
-                } header: {
-                    Text("API Keys")
-                } footer: {
-                    Text("Keys are stored in the Keychain and never leave your devices. The app has no backend and no analytics.")
-                }
-
-                Section {
-                    Picker("Image Format", selection: $imageFormat) {
-                        Text("HEIC — compact (recommended)").tag("heic")
-                        Text("PNG — original").tag("png")
-                    }
-                    Toggle("Upscale to device resolution", isOn: $upscaleEnabled)
-                    if upscaleEnabled {
-                        Picker("Upscaler", selection: $upscalerID) {
-                            ForEach(UpscalerRegistry.all, id: \.id) { upscaler in
-                                Text(upscaler.displayName).tag(upscaler.id)
-                            }
-                        }
-                    }
-                } header: {
-                    Text("Generation")
-                } footer: {
-                    Text("HEIC keeps wallpapers 5–8× smaller with no visible quality loss. Providers generate ~1.5 MP images; upscaling brings them to the exact screen resolution of the chosen device. Applies to newly generated images.")
-                }
-
-                GlobalSpendingSection(sets: store.sets)
-
-                WeatherStatsSection()
-
-                Section("Location") {
-                    LocationRow()
-                }
-
-                StorageSection()
-
-                Section("About") {
-                    LabeledContent("Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
-                    Link(destination: URL(string: "https://github.com/mekedron/WeatherWallpapers")!) {
-                        Label("Source Code on GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
-                    }
-                    Text("Free & open source. Your images and API keys stay on your devices.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
                 }
             }
+        } header: {
+            Text("Generation")
+        } footer: {
+            Text("HEIC keeps wallpapers 5–8× smaller with no visible quality loss. Providers generate ~1.5 MP images; upscaling brings them to the exact screen resolution of the chosen device. Applies to newly generated images.")
+        }
+    }
+
+    private var languageSection: some View {
+        Section {
+            LanguagePicker()
+            #if os(iOS)
+            Text("Applies after the app restarts.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            #endif
+        }
+    }
+
+    private var aboutSection: some View {
+        Section("About") {
+            LabeledContent("Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
+            Link(destination: URL(string: "https://github.com/mekedron/WeatherWallpapers")!) {
+                Label("Source Code on GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
+            }
+            Text("Free & open source. Your images and API keys stay on your devices.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
     }
 }
 

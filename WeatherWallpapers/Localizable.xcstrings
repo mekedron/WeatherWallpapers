@@ -309,7 +309,13 @@
     "Metadata" : { "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Метаданные" } } } },
     "Calculating…" : { "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Подсчёт…" } } } },
     "Clear Caches" : { "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Очистить кэши" } } } },
-    "Sizes reflect space used on this device. Wallpapers not yet downloaded from iCloud take almost no space. Caches hold only regenerable data and are safe to clear." : { "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Размеры — место, занятое на этом устройстве. Обои, ещё не загруженные из iCloud, почти не занимают места. Кэши содержат только восстановимые данные, их безопасно очищать." } } } }
+    "Sizes reflect space used on this device. Wallpapers not yet downloaded from iCloud take almost no space. Caches hold only regenerable data and are safe to clear." : { "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Размеры — место, занятое на этом устройстве. Обои, ещё не загруженные из iCloud, почти не занимают места. Кэши содержат только восстановимые данные, их безопасно очищать." } } } },
+    "General" : { "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Основные" } } } },
+    "Weather" : { "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Погода" } } } },
+    "Language" : { "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Язык" } } } },
+    "System" : { "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Системный" } } } },
+    "Spending" : { "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Расходы" } } } },
+    "Applies after the app restarts." : { "localizations" : { "ru" : { "stringUnit" : { "state" : "translated", "value" : "Применяется после перезапуска приложения." } } } }
   },
   "version" : "1.0"
 }
