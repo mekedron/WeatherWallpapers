@@ -64,36 +64,13 @@ struct SettingsView: View {
 
                 GlobalSpendingSection(sets: store.sets)
 
+                WeatherStatsSection()
+
                 Section("Location") {
                     LocationRow()
                 }
 
-                Section("Storage") {
-                    HStack {
-                        Image(systemName: store.isUsingICloud ? "icloud.fill" : "internaldrive")
-                            .foregroundStyle(.tint)
-                        VStack(alignment: .leading) {
-                            if store.isUsingICloud {
-                                Text("iCloud Drive")
-                                Text("Wallpapers sync automatically across all your devices.")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            } else {
-                                Text("Local Storage")
-                                Text("Sign in to iCloud to sync wallpapers across devices.")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                    #if os(macOS)
-                    if let rootURL = store.rootURL {
-                        Button("Reveal Wallpapers Folder in Finder") {
-                            Platform.revealInFinder(rootURL)
-                        }
-                    }
-                    #endif
-                }
+                StorageSection()
 
                 Section("About") {
                     LabeledContent("Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")

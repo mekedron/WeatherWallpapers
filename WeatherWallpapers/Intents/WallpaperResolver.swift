@@ -44,6 +44,7 @@ enum WallpaperResolver {
             throw IntentError.weatherUnavailable
         }
         logger.info("Conditions: \(conditions.weather.rawValue, privacy: .public) / \(conditions.time.rawValue, privacy: .public)")
+        await WeatherStatsStore.shared.record(conditions.weather)
 
         guard let variant = bestVariant(for: conditions, in: set) else {
             // Last resort: the set has no generated images at all — return the
