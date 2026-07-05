@@ -322,7 +322,12 @@ a { color: inherit; }
 
 /* Phone mockup */
 
-.hero-phone { position: relative; }
+.hero-phone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .hero-phone .glow {
   position: absolute;
