@@ -45,7 +45,7 @@ struct UsageRecord: Codable, Hashable, Identifiable {
     enum Category: String, Codable, CaseIterable {
         /// Original artwork (text → image), including discarded regenerations.
         case sourceImage
-        /// One of the 120 weather/time edits.
+        /// One of the 96 weather/time edits.
         case variantImage
         /// AI upscaling pass.
         case upscale

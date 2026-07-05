@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// One wallpaper set: 30 weather groups, each a row of 4 times of day.
+/// One wallpaper set: 24 weather groups, each a row of 4 times of day.
 /// Supports multi-select regeneration of any subset.
 struct SetDetailView: View {
     @EnvironmentObject private var store: WallpaperStore
@@ -60,7 +60,7 @@ struct SetDetailView: View {
             SetBudgetView(set: set)
         }
         .confirmationDialog(
-            "Regenerate all 120 images?",
+            "Regenerate all 96 images?",
             isPresented: $confirmRegenerateAll,
             titleVisibility: .visible
         ) {

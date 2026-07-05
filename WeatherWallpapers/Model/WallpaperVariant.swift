@@ -1,6 +1,6 @@
 import Foundation
 
-/// One of the 120 weather × time combinations of a wallpaper set.
+/// One of the 96 weather × time combinations of a wallpaper set.
 struct WallpaperVariant: Hashable, Identifiable, Codable {
     let weather: WeatherCondition
     let time: TimeOfDay
@@ -15,7 +15,7 @@ struct WallpaperVariant: Hashable, Identifiable, Codable {
 
     var localizedTitle: String { "\(weather.localizedName) · \(time.localizedName)" }
 
-    /// All 120 variants grouped by weather, times in fixed order.
+    /// All 96 variants grouped by weather, times in fixed order.
     static let all: [WallpaperVariant] = WeatherCondition.allCases.flatMap { weather in
         TimeOfDay.allCases.map { WallpaperVariant(weather: weather, time: $0) }
     }

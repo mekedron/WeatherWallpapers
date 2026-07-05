@@ -116,7 +116,7 @@ struct LibraryView: View {
             }
             Button("Cancel", role: .cancel) { setToDelete = nil }
         } message: {
-            Text("All 120 images of this set will be deleted.")
+            Text("All 96 images of this set will be deleted.")
         }
         .refreshable {
             store.refresh()
@@ -232,7 +232,7 @@ struct LibraryView: View {
                     .foregroundStyle(.tint)
                 Text("New Wallpaper Set")
                     .font(.headline)
-                Text("120 variants for every weather and time of day")
+                Text("96 variants for every weather and time of day")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

@@ -1,7 +1,7 @@
 import Foundation
 
 /// A reusable prompt template for variant generation. The text can reference
-/// placeholders that are filled in for each of the 120 variants:
+/// placeholders that are filled in for each of the 96 variants:
 /// - `{time}` / `{weather}` — the detailed lighting and weather prompt modules,
 /// - `{time_name}` / `{weather_name}` — plain English labels ("Sunset", "Heavy Rain").
 ///
@@ -64,7 +64,7 @@ extension PromptTemplate {
         }
     }
 
-    /// Without a weather placeholder all 120 variants come out nearly identical.
+    /// Without a weather placeholder all 96 variants come out nearly identical.
     var mentionsWeather: Bool {
         text.contains("{weather}") || text.contains("{weather_name}")
     }

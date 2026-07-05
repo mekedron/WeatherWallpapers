@@ -16,7 +16,7 @@ protocol ImageProvider: Sendable {
 
     /// Text → image, for creating the source artwork.
     func generate(prompt: String, targetSize: CGSize, apiKey: String) async throws -> ProviderResult
-    /// Image + text → image, for producing the 120 weather/time variants.
+    /// Image + text → image, for producing the 96 weather/time variants.
     func edit(image: Data, prompt: String, targetSize: CGSize, apiKey: String) async throws -> ProviderResult
 }
 

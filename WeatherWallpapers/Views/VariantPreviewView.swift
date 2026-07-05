@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Immersive gallery viewer over all 120 variants of a set.
+/// Immersive gallery viewer over all 96 variants of a set.
 /// iOS: native finger-swipe paging, pinch/double-tap zoom, filmstrip.
 /// macOS: its own resizable window; two-finger swipes, click-drag paging that
 /// moves the actual scroll (neighbour slides in), arrow keys, pinch zoom.

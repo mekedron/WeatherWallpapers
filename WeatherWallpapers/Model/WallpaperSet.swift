@@ -16,7 +16,7 @@ struct SetMetadata: Codable, Hashable {
 }
 
 /// A wallpaper set: one folder in the storage root containing the original
-/// image, `set.json` and up to 120 generated variant PNGs.
+/// image, `set.json` and up to 96 generated variant PNGs.
 struct WallpaperSet: Identifiable, Hashable {
     let folderURL: URL
     var meta: SetMetadata

@@ -180,7 +180,7 @@ private struct PromptTemplateEditor: View {
                     notesSection(
                         title: "Weather-Specific Additions",
                         addLabel: "Add Weather Condition",
-                        placeholder: String(localized: "e.g. keep the tornado far away…"),
+                        placeholder: String(localized: "e.g. keep the lightning far away…"),
                         cases: WeatherCondition.allCases.map { ($0.rawValue, $0.localizedName, $0.symbolName) },
                         notes: $template.weatherNotes
                     )
@@ -271,7 +271,7 @@ private struct PromptTemplateEditor: View {
             warning("Unknown placeholders sent to the model as-is: \(unknown.map { "{\($0)}" }.joined(separator: ", "))")
         }
         if !template.mentionsWeather {
-            warning("No {weather} or {weather_name} — all 30 weather conditions will look nearly identical.")
+            warning("No {weather} or {weather_name} — all 24 weather conditions will look nearly identical.")
         }
         if !template.mentionsTime {
             warning("No {time} or {time_name} — the four times of day will look nearly identical.")
@@ -422,7 +422,7 @@ private struct PromptTemplateEditor: View {
         } header: {
             Text("Try It")
         } footer: {
-            Text("Generates one image from the chosen set's original with the preview weather and time — a cheap check before regenerating all 120. The result is not saved into the set; the API call is billed.")
+            Text("Generates one image from the chosen set's original with the preview weather and time — a cheap check before regenerating all 96. The result is not saved into the set; the API call is billed.")
         }
     }
 

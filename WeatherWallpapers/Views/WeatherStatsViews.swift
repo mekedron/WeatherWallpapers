@@ -122,7 +122,7 @@ struct WeatherStatsSection: View {
     @ViewBuilder
     private var insightRows: some View {
         if unobserved.isEmpty {
-            Label("All 30 conditions have occurred at your location.", systemImage: "checkmark.seal")
+            Label("All 24 conditions have occurred at your location.", systemImage: "checkmark.seal")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         } else {

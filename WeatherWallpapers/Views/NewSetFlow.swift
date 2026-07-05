@@ -148,7 +148,7 @@ struct NewSetFlow: View {
                         Spacer()
                     }
                 } else {
-                    Text("Pick or generate the artwork that all 120 wallpapers will be based on.")
+                    Text("Pick or generate the artwork that all 96 wallpapers will be based on.")
                         .foregroundStyle(.secondary)
                 }
             } header: {
@@ -283,7 +283,7 @@ struct NewSetFlow: View {
             }
 
             Section {
-                Text("120 images will be generated: 30 weather conditions × 4 times of day. You can regenerate any of them later.")
+                Text("96 images will be generated: 24 weather conditions × 4 times of day. You can regenerate any of them later.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }

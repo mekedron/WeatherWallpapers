@@ -7,7 +7,7 @@ struct CurrentConditions {
 }
 
 /// Fetches current weather from Open-Meteo (free, no API key, no account)
-/// and maps WMO weather codes onto the 30 wallpaper conditions.
+/// and maps WMO weather codes onto the 24 wallpaper conditions.
 struct WeatherService {
     func currentConditions(latitude: Double, longitude: Double) async throws -> CurrentConditions {
         var components = URLComponents(string: "https://api.open-meteo.com/v1/forecast")!
@@ -30,7 +30,8 @@ struct WeatherService {
             code: decoded.current.weather_code,
             cloudCover: decoded.current.cloud_cover ?? 0,
             windSpeed: decoded.current.wind_speed_10m ?? 0,
-            temperature: decoded.current.temperature_2m
+            temperature: decoded.current.temperature_2m,
+            isDay: decoded.current.is_day == 1
         )
         let time = Self.mapTime(
             now: Date(),
@@ -45,8 +46,12 @@ struct WeatherService {
     // MARK: - Mapping
 
     /// WMO weather interpretation codes → wallpaper conditions, refined with
-    /// cloud cover, wind and temperature for states WMO does not encode.
-    static func mapWeather(code: Int, cloudCover: Double, windSpeed: Double, temperature: Double) -> WeatherCondition {
+    /// cloud cover, wind, temperature and daylight for states WMO does not encode.
+    static func mapWeather(code: Int, cloudCover: Double, windSpeed: Double, temperature: Double, isDay: Bool) -> WeatherCondition {
+        // Sun peeking through while snow or rain still falls — Apple's own
+        // "visible sun" definition for these two conditions.
+        let sunVisible = isDay && cloudCover < 35
+
         switch code {
         case 45, 48: return .foggy
         case 51, 53, 55: return .drizzle
@@ -55,12 +60,24 @@ struct WeatherService {
         case 63: return .rain
         case 65: return .heavyRain
         case 66, 67: return .freezingRain
-        case 71, 77: return .flurries
-        case 73: return .snow
-        case 75, 86: return .heavySnow
-        case 80, 81: return .rain
+        case 71, 77:
+            if windSpeed >= 50 { return .blizzard }
+            if windSpeed >= 29 { return .blowingSnow }
+            return sunVisible ? .sunFlurries : .flurries
+        case 73:
+            if windSpeed >= 50 { return .blizzard }
+            if windSpeed >= 29 { return .blowingSnow }
+            return .snow
+        case 75, 86:
+            if windSpeed >= 50 { return .blizzard }
+            if windSpeed >= 29 { return .blowingSnow }
+            return .heavySnow
+        case 80, 81: return sunVisible ? .sunShowers : .rain
         case 82: return .heavyRain
-        case 85: return .flurries
+        case 85:
+            if windSpeed >= 50 { return .blizzard }
+            if windSpeed >= 29 { return .blowingSnow }
+            return sunVisible ? .sunFlurries : .flurries
         case 95: return .thunderstorms
         case 96, 99: return .hail
         default:
