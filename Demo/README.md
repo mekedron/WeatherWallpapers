@@ -14,7 +14,7 @@ wallpaper).
 
 - `<wallpaper-folder>` — a folder of `<Weather> <Time>.png` files, i.e. an
   exported wallpaper set from the app (`Clear Day.png`, `Snow Night.png`, …).
-  Must contain all 30 weather conditions × 4 times of day (120 files).
+  Must contain all 24 weather conditions × 4 times of day (96 files).
 - `[screenshot]` — an iPhone home screen screenshot with a flat green
   wallpaper background to key out. Defaults to `screenshot-template.jpg` in
   this folder. Take a fresh one (Settings → set wallpaper to a flat green

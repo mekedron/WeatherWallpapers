@@ -40,14 +40,14 @@ KEY_BLEND="${KEY_BLEND:-0.10}"
 WORK_DIR="$(mktemp -d)"
 trap 'rm -rf "$WORK_DIR"' EXIT
 
-# Canonical 30 weather conditions, calm -> severe (matches the app's set).
+# Canonical 24 weather conditions, calm -> severe (matches the app's set).
 WEATHERS=(
   "Clear" "Mostly Clear" "Partly Cloudy" "Mostly Cloudy" "Cloudy"
-  "Foggy" "Haze" "Smoky" "Blowing Dust" "Breezy" "Windy"
-  "Drizzle" "Rain" "Heavy Rain"
-  "Isolated Thunderstorms" "Scattered Thunderstorms" "Strong Storms" "Thunderstorms"
-  "Flurries" "Snow" "Heavy Snow" "Sleet" "Freezing Drizzle" "Freezing Rain" "Frigid"
-  "Hail" "Hot" "Tornado" "Tropical Storm" "Hurricane"
+  "Foggy" "Breezy" "Windy"
+  "Drizzle" "Rain" "Sun Showers" "Heavy Rain" "Thunderstorms"
+  "Flurries" "Sun Flurries" "Snow" "Heavy Snow" "Blowing Snow" "Blizzard"
+  "Freezing Drizzle" "Freezing Rain" "Frigid"
+  "Hail" "Hot"
 )
 # Full day cycle per weather, closing the loop back on night before the next weather.
 TIMES=("Night" "Sunrise" "Day" "Sunset" "Night")

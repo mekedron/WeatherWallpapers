@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weather Wallpapers — Wallpapers that match the sky outside</title>
+<meta name="description" content="Free, open-source iPhone, iPad and Mac app that generates 96 AI wallpaper variants (24 weather conditions × 4 times of day) from one artwork, then serves the right one via Shortcuts — so your wallpaper always matches the sky outside.">
+<meta name="keywords" content="weather wallpaper, dynamic wallpaper, Shortcuts automation, iOS wallpaper app, macOS wallpaper app, AI wallpaper generator, open source iOS app">
+<link rel="canonical" href="https://mekedron.github.io/WeatherWallpapers/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Weather Wallpapers — Wallpapers that match the sky outside">
+<meta property="og:description" content="Free, open-source iPhone, iPad and Mac app that generates 96 AI wallpaper variants from one artwork, then serves the right one via Shortcuts.">
+<meta property="og:url" content="https://mekedron.github.io/WeatherWallpapers/">
+<meta property="og:image" content="https://mekedron.github.io/WeatherWallpapers/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Weather Wallpapers — Wallpapers that match the sky outside">
+<meta name="twitter:description" content="Free, open-source iPhone, iPad and Mac app that generates 96 AI wallpaper variants from one artwork, then serves the right one via Shortcuts.">
+<meta name="twitter:image" content="https://mekedron.github.io/WeatherWallpapers/assets/og-image.png">
+
+<link rel="icon" type="image/svg+xml" href="assets/mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Weather Wallpapers",
+  "description": "Free, open-source iPhone, iPad and Mac app that generates 96 AI wallpaper variants (24 weather conditions x 4 times of day) from one artwork, then serves the right one via Shortcuts.",
+  "url": "https://mekedron.github.io/WeatherWallpapers/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "iOS 17+, iPadOS 17+, macOS 14+",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "license": "https://opensource.org/licenses/MIT",
+  "author": { "@type": "Person", "name": "mekedron", "url": "https://github.com/mekedron" },
+  "codeRepository": "https://github.com/mekedron/WeatherWallpapers"
+}
+</script>
+</head>
+<body>
+<div class="page">
+  <div class="wrap">
+    <nav class="nav">
+      <a class="brand" href="#top">
+        <img src="assets/mark.svg" alt="">
+        <span>Weather Wallpapers</span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="#how">How it works</a>
+        <a class="nav-link" href="#features">Features</a>
+        <a class="nav-link" href="#privacy">Privacy</a>
+        <div class="theme-toggle" role="group" aria-label="Color theme">
+          <button type="button" data-theme-btn="light" title="Light" aria-label="Light theme">☀</button>
+          <button type="button" data-theme-btn="auto" title="Match system" aria-label="Auto theme">◐</button>
+          <button type="button" data-theme-btn="dark" title="Dark" aria-label="Dark theme">☾</button>
+        </div>
+        <a class="coffee-link" href="https://buymeacoffee.com/mekedron" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+        <a class="btn-pill" href="https://github.com/mekedron/WeatherWallpapers" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </nav>
+
+    <header class="hero" id="top">
+      <div>
+        <div class="eyebrow"><span class="dot"></span> FREE &amp; OPEN SOURCE</div>
+        <h1>Your wallpaper,<br>matched to the<br>sky outside.</h1>
+        <p class="lede">Generate <strong>96 variants</strong> from one artwork — every weather condition, every time of day — and let Shortcuts serve the right one automatically, all day long.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://github.com/mekedron/WeatherWallpapers" target="_blank" rel="noopener">Get the source on GitHub</a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+        <div class="spec-row">
+          <span>iOS 17+</span><span class="sep">·</span><span>macOS 14+</span><span class="sep">·</span><span>No account</span>
+        </div>
+      </div>
+
+      <div class="hero-phone">
+        <div class="glow"></div>
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="sky sky-sunrise" data-sky="sunrise"></div>
+            <div class="sky sky-day" data-sky="day"></div>
+            <div class="sky sky-sunset" data-sky="sunset"></div>
+            <div class="sky sky-night" data-sky="night">
+              <div class="star" style="width:3px;height:3px;top:14%;left:22%;"></div>
+              <div class="star" style="width:2px;height:2px;top:22%;left:64%;animation-delay:.5s;"></div>
+              <div class="star" style="width:2px;height:2px;top:10%;left:78%;animation-delay:1s;"></div>
+              <div class="star" style="width:3px;height:3px;top:30%;left:38%;animation-delay:.2s;"></div>
+              <div class="star" style="width:2px;height:2px;top:18%;left:46%;animation-delay:.8s;"></div>
+              <div class="star" style="width:2px;height:2px;top:26%;left:14%;animation-delay:1.3s;"></div>
+            </div>
+
+            <div class="mountains"><div class="far"></div><div class="near"></div></div>
+
+            <div class="lock-overlay">
+              <div class="lock-date" data-lock-date>Sunday, July 5</div>
+              <div class="lock-time">9:41</div>
+              <div class="lock-spacer"></div>
+              <div class="lock-badge"><span class="dot"></span> Now: Clear · <span data-time-label>Day</span></div>
+            </div>
+
+            <div class="island"></div>
+          </div>
+        </div>
+
+        <div class="time-toggle" role="group" aria-label="Time of day preview">
+          <button type="button" data-time-btn="sunrise">Sunrise</button>
+          <button type="button" data-time-btn="day">Day</button>
+          <button type="button" data-time-btn="sunset">Sunset</button>
+          <button type="button" data-time-btn="night">Night</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="math-grid">
+        <div>
+          <div class="section-label">THE MATH</div>
+          <h2>One image in.<br>A whole sky out.</h2>
+          <p class="lede">Pick or generate a single source artwork. Weather Wallpapers re-lights it into every combination of condition and time — preserving your composition and art style across all of them.</p>
+          <div class="math-equation">
+            <div><div class="num">24</div><div class="unit">conditions</div></div>
+            <div class="op">×</div>
+            <div><div class="num">4</div><div class="unit">times of day</div></div>
+            <div class="op">=</div>
+            <div><div class="num accent">96</div><div class="unit">wallpapers</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="variant-grid">
+            <div class="variant-swatch sunrise"><div class="card"><div class="ridge"></div></div><div class="label">Sunrise</div></div>
+            <div class="variant-swatch day"><div class="card"><div class="ridge"></div></div><div class="label">Day</div></div>
+            <div class="variant-swatch sunset"><div class="card"><div class="ridge"></div></div><div class="label">Sunset</div></div>
+            <div class="variant-swatch night"><div class="card"><div class="ridge"></div><div style="position:absolute;top:16%;left:26%;width:2px;height:2px;border-radius:50%;background:#fff;"></div><div style="position:absolute;top:24%;left:60%;width:2px;height:2px;border-radius:50%;background:#fff;"></div></div><div class="label">Night</div></div>
+          </div>
+          <div class="condition-list">Clear · Mostly Clear · Partly Cloudy · Mostly Cloudy · Cloudy · Foggy · Breezy · Windy · Drizzle · Rain · Sun Showers · Heavy Rain · Thunderstorms · Flurries · Sun Flurries · Snow · Heavy Snow · Blowing Snow · Blizzard · Freezing Drizzle · Freezing Rain · Frigid · Hail · Hot</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="section-head">
+        <div class="section-label">INSIDE THE APP</div>
+        <h2>Built like a native app,<br>because it is one.</h2>
+        <p>A clean SwiftUI app across iPhone, iPad and Mac — everything lives on your devices.</p>
+      </div>
+      <div class="feature-grid">
+        <div class="card">
+          <div class="icon">▦</div>
+          <div class="tag">LIBRARY</div>
+          <div class="title">Your wallpaper library</div>
+          <p>Every set in one grid — source art, target device and live generation progress at a glance. Import or export any set as a ZIP.</p>
+        </div>
+        <div class="card">
+          <div class="icon">◱</div>
+          <div class="tag">SET DETAIL</div>
+          <div class="title">The 96-variant grid</div>
+          <p>All 96 images grouped by weather and time of day. Regenerate a single image, a whole row, or the full set — with per-set cost and token tracking.</p>
+        </div>
+        <div class="card">
+          <div class="icon">✦</div>
+          <div class="tag">NEW SET WIZARD</div>
+          <div class="title">A guided three-step flow</div>
+          <p>Name your set, pick a built-in or custom device resolution, then choose a photo, a file, or generate the source artwork with AI.</p>
+        </div>
+        <div class="card">
+          <div class="icon">⚙</div>
+          <div class="tag">SETTINGS</div>
+          <div class="title">Keys, spending &amp; more</div>
+          <p>Store provider API keys in the Keychain, review spending, browse weather stats, and switch the interface language — no backend involved.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="section-head">
+        <div class="section-label">FOUR STEPS</div>
+        <h2>Set it once. Forget it forever.</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step">
+          <div class="index">01</div>
+          <div class="title">Create a set</div>
+          <p>Pick a photo, choose a file, or generate the source artwork with AI from any prompt.</p>
+        </div>
+        <div class="step">
+          <div class="index">02</div>
+          <div class="title">Pick your device</div>
+          <p>iPhone, iPad or MacBook resolutions built in — or add a custom size of your own.</p>
+        </div>
+        <div class="step">
+          <div class="index">03</div>
+          <div class="title">Generate 96</div>
+          <p>The app re-lights your image into every weather and time of day. Regenerate any you like.</p>
+        </div>
+        <div class="step is-final">
+          <div class="index">04</div>
+          <div class="title">Automate</div>
+          <p>The &ldquo;Get Current Wallpaper&rdquo; Shortcut reads your weather and sets the matching image.</p>
+        </div>
+      </div>
+      <div class="shortcut-strip">
+        <span class="label">Shortcut:</span>
+        <span class="step-pill">📍 Get Location</span>
+        <span class="arrow">→</span>
+        <span class="step-pill">🌦 Open-Meteo weather</span>
+        <span class="arrow">→</span>
+        <span class="step-pill is-highlight">🖼 Get Current Wallpaper</span>
+        <span class="arrow">→</span>
+        <span class="step-pill">⚙ Set Wallpaper</span>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:20px;">
+      <div class="split-grid">
+        <div class="card">
+          <div class="section-label">BRING YOUR OWN KEY</div>
+          <h3>Two providers. Pluggable by design.</h3>
+          <div class="provider-row chatgpt">
+            <div class="swatch"></div>
+            <div><div class="name">ChatGPT</div><div class="meta">OpenAI · gpt-image-1</div></div>
+          </div>
+          <div class="provider-row gemini">
+            <div class="swatch"></div>
+            <div><div class="name">Nano Banana</div><div class="meta">Google Gemini · gemini-2.5-flash-image</div></div>
+          </div>
+        </div>
+        <div class="card" id="privacy">
+          <div class="section-label">PRIVACY</div>
+          <h3>Nothing leaves your devices.</h3>
+          <div class="check-list">
+            <div class="check-item"><span class="mark">✓</span><span>No backend, no analytics, no accounts.</span></div>
+            <div class="check-item"><span class="mark">✓</span><span>API keys live in the Keychain, sent only to the provider you chose.</span></div>
+            <div class="check-item"><span class="mark">✓</span><span>Location never leaves the device — used only for the weather request.</span></div>
+            <div class="check-item"><span class="mark">✓</span><span>Sets are plain folders of PNGs in your iCloud Drive — usable without the app.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="get">
+      <div class="sky-cta">
+        <div class="ridge"></div>
+        <div class="content">
+          <h2>Match your sky today.</h2>
+          <p>Free and open source for iPhone, iPad and Mac. Your artwork, your keys, your weather.</p>
+          <div class="cta-row">
+            <a class="btn btn-dark" href="https://github.com/mekedron/WeatherWallpapers" target="_blank" rel="noopener">Build from source</a>
+            <a class="btn btn-glass" href="https://github.com/mekedron/WeatherWallpapers" target="_blank" rel="noopener">View on GitHub</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0;" id="support">
+      <div class="support-card">
+        <div>
+          <div class="support-eyebrow">☕ SUPPORT THE PROJECT</div>
+          <h2>Built by one person,<br>free for everyone.</h2>
+          <p>Weather Wallpapers is a free, open-source app built and maintained by a single solo developer, in the open, with no ads, no accounts and no tracking. If it brightened your home screen, a coffee helps keep it going.</p>
+        </div>
+        <div class="cta-side">
+          <a class="btn-gold" href="https://buymeacoffee.com/mekedron" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <a class="brand" href="#top">
+        <img src="assets/mark.svg" alt="">
+        <span>Weather Wallpapers</span>
+      </a>
+      <div class="meta">MIT License · Open source · Built with SwiftUI</div>
+    </footer>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
