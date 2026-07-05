@@ -37,14 +37,14 @@ html, body { margin: 0; padding: 0; }
     --text-mid: #55535f;
     --text-soft: #403e4a;
     --text-dim: #666370;
-    --text-dimmer: #6b6874;
+    --text-dimmer: #57545f;
     --surface: rgba(22, 20, 32, 0.035);
     --surface-2: rgba(22, 20, 32, 0.06);
     --border: rgba(22, 20, 32, 0.1);
     --border-2: rgba(22, 20, 32, 0.14);
     --seg-active: rgba(22, 20, 32, 0.11);
-    --gold-text: #8a6215;
-    --accent-text: #b5481f;
+    --gold-text: #6e4a10;
+    --accent-text: #8a3a1c;
   }
 }
 
@@ -56,14 +56,14 @@ html, body { margin: 0; padding: 0; }
   --text-mid: #55535f;
   --text-soft: #403e4a;
   --text-dim: #666370;
-  --text-dimmer: #6b6874;
+  --text-dimmer: #57545f;
   --surface: rgba(22, 20, 32, 0.035);
   --surface-2: rgba(22, 20, 32, 0.06);
   --border: rgba(22, 20, 32, 0.1);
   --border-2: rgba(22, 20, 32, 0.14);
   --seg-active: rgba(22, 20, 32, 0.11);
-  --gold-text: #8a6215;
-  --accent-text: #b5481f;
+  --gold-text: #6e4a10;
+  --accent-text: #8a3a1c;
 }
 
 :root[data-theme="dark"] {
@@ -455,66 +455,56 @@ button.icon-btn { padding: 0; }
   z-index: 4;
 }
 
-.time-toggle {
+.preview-controls {
   position: relative;
   z-index: 2;
   margin-top: 26px;
   display: flex;
-  gap: 4px;
-  padding: 5px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
   background: var(--surface-2);
   border: 1px solid var(--border-2);
-  border-radius: 999px;
+  border-radius: 20px;
   backdrop-filter: blur(10px);
 }
 
-.time-toggle button {
+.time-toggle, .weather-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.weather-toggle {
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.time-toggle button, .weather-toggle button {
+  flex: 1;
   border: none;
   cursor: pointer;
   font-family: 'Hanken Grotesk', sans-serif;
   font-weight: 600;
-  font-size: 13px;
-  padding: 9px 18px;
   border-radius: 999px;
   background: transparent;
   color: var(--text-dim);
   transition: all .25s ease;
 }
 
-.time-toggle button[aria-pressed="true"] {
-  background: var(--seg-active);
-  color: var(--text);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset;
-}
-
-.weather-toggle {
-  position: relative;
-  z-index: 2;
-  margin-top: 18px;
-  display: flex;
-  gap: 4px;
-  padding: 5px;
-  background: var(--surface-2);
-  border: 1px solid var(--border-2);
-  border-radius: 999px;
-  backdrop-filter: blur(10px);
+.time-toggle button {
+  font-size: 13px;
+  padding: 9px 12px;
 }
 
 .weather-toggle button {
-  border: none;
-  cursor: pointer;
-  width: 34px;
-  height: 34px;
-  font-size: 15px;
-  line-height: 1;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--text-dim);
-  transition: all .25s ease;
+  font-size: 11.5px;
+  padding: 7px 8px;
 }
 
+.time-toggle button[aria-pressed="true"],
 .weather-toggle button[aria-pressed="true"] {
   background: var(--seg-active);
+  color: var(--text);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset;
 }
 
@@ -532,7 +522,14 @@ button.icon-btn { padding: 0; }
 .weather-fx.is-active { opacity: 1; }
 
 .weather-fx[data-weather-fx="cloudy"] {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.1) 55%, transparent 100%);
+  background:
+    radial-gradient(ellipse 60px 26px at 20% 20%, rgba(255, 255, 255, 0.75), transparent 70%),
+    radial-gradient(ellipse 50px 22px at 33% 15%, rgba(255, 255, 255, 0.7), transparent 70%),
+    radial-gradient(ellipse 78px 30px at 63% 13%, rgba(255, 255, 255, 0.75), transparent 70%),
+    radial-gradient(ellipse 55px 24px at 77% 20%, rgba(255, 255, 255, 0.65), transparent 70%),
+    radial-gradient(ellipse 68px 28px at 30% 35%, rgba(255, 255, 255, 0.6), transparent 70%),
+    radial-gradient(ellipse 72px 28px at 70% 37%, rgba(255, 255, 255, 0.6), transparent 70%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 60%);
 }
 
 .weather-fx[data-weather-fx="rain"] {
@@ -757,7 +754,7 @@ button.icon-btn { padding: 0; }
 .shortcut-strip .step-pill.is-highlight {
   background: rgba(255, 122, 77, 0.16);
   border: 1px solid rgba(255, 122, 77, 0.3);
-  color: #ffb99e;
+  color: var(--accent-text);
 }
 .shortcut-strip .arrow { color: var(--text-dimmer); }
 

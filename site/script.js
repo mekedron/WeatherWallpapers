@@ -73,7 +73,7 @@
   // ---------- Hero weather switcher ----------
 
   var WEATHER_ICON = { clear: '☀', cloudy: '⛅', rain: '🌧', snow: '❄' };
-  var WEATHER_LABEL = { clear: 'Clear', cloudy: 'Partly Cloudy', rain: 'Rain', snow: 'Snow' };
+  var WEATHER_LABEL = { clear: 'Clear', cloudy: 'Cloudy', rain: 'Rain', snow: 'Snow' };
 
   function setWeather(value) {
     var fx = document.querySelector('[data-weather-fx]');
