@@ -3,6 +3,9 @@
 
   var THEME_KEY = 'ww-theme';
   var root = document.documentElement;
+  var THEME_ORDER = ['auto', 'light', 'dark'];
+  var THEME_ICON = { auto: '◐', light: '☀', dark: '☾' };
+  var THEME_LABEL = { auto: 'Auto', light: 'Light', dark: 'Dark' };
 
   function applyTheme(value) {
     if (value === 'light' || value === 'dark') {
@@ -11,9 +14,12 @@
       root.removeAttribute('data-theme');
       value = 'auto';
     }
-    document.querySelectorAll('[data-theme-btn]').forEach(function (btn) {
-      btn.setAttribute('aria-pressed', String(btn.getAttribute('data-theme-btn') === value));
-    });
+    var btn = document.querySelector('[data-theme-cycle]');
+    if (btn) {
+      btn.textContent = THEME_ICON[value];
+      btn.title = 'Theme: ' + THEME_LABEL[value];
+      btn.setAttribute('aria-label', 'Theme: ' + THEME_LABEL[value] + ' (click to change)');
+    }
   }
 
   function setTheme(value) {
@@ -23,11 +29,17 @@
 
   var savedTheme = 'auto';
   try { savedTheme = localStorage.getItem(THEME_KEY) || 'auto'; } catch (e) { /* ignore */ }
+  if (THEME_ORDER.indexOf(savedTheme) === -1) savedTheme = 'auto';
   applyTheme(savedTheme);
 
-  document.querySelectorAll('[data-theme-btn]').forEach(function (btn) {
-    btn.addEventListener('click', function () { setTheme(btn.getAttribute('data-theme-btn')); });
-  });
+  var themeCycleBtn = document.querySelector('[data-theme-cycle]');
+  if (themeCycleBtn) {
+    themeCycleBtn.addEventListener('click', function () {
+      var current = root.getAttribute('data-theme') || 'auto';
+      var next = THEME_ORDER[(THEME_ORDER.indexOf(current) + 1) % THEME_ORDER.length];
+      setTheme(next);
+    });
+  }
 
   // ---------- Hero time-of-day switcher ----------
 
@@ -66,4 +78,18 @@
       weekday: 'long', month: 'long', day: 'numeric',
     });
   }
+
+  // ---------- GitHub star count ----------
+
+  fetch('https://api.github.com/repos/mekedron/WeatherWallpapers')
+    .then(function (res) { return res.ok ? res.json() : null; })
+    .then(function (data) {
+      if (!data || typeof data.stargazers_count !== 'number') return;
+      var el = document.querySelector('[data-star-count]');
+      if (!el) return;
+      var count = data.stargazers_count;
+      el.textContent = count >= 1000 ? (count / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : String(count);
+      el.hidden = false;
+    })
+    .catch(function () { /* offline or rate-limited — leave it hidden */ });
 })();

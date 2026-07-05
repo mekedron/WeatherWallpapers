@@ -47,17 +47,20 @@
         <img src="assets/mark.svg" alt="">
         <span>Weather Wallpapers</span>
       </a>
+      <div class="nav-icons">
+        <button type="button" class="icon-btn" data-theme-cycle title="Theme: Auto" aria-label="Theme: Auto (click to change)">◐</button>
+        <a class="icon-btn icon-btn-coffee" href="https://buymeacoffee.com/mekedron" target="_blank" rel="noopener" title="Buy me a coffee" aria-label="Buy me a coffee">☕</a>
+        <a class="gh-link" href="https://github.com/mekedron/WeatherWallpapers" target="_blank" rel="noopener" aria-label="View source on GitHub">
+          <span class="icon-btn" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          </span>
+          <span class="star-count" data-star-count hidden></span>
+        </a>
+      </div>
       <div class="nav-links">
         <a class="nav-link" href="#how">How it works</a>
         <a class="nav-link" href="#features">Features</a>
         <a class="nav-link" href="#privacy">Privacy</a>
-        <div class="theme-toggle" role="group" aria-label="Color theme">
-          <button type="button" data-theme-btn="light" title="Light" aria-label="Light theme">☀</button>
-          <button type="button" data-theme-btn="auto" title="Match system" aria-label="Auto theme">◐</button>
-          <button type="button" data-theme-btn="dark" title="Dark" aria-label="Dark theme">☾</button>
-        </div>
-        <a class="coffee-link" href="https://buymeacoffee.com/mekedron" target="_blank" rel="noopener">☕ Buy me a coffee</a>
-        <a class="btn-pill" href="https://github.com/mekedron/WeatherWallpapers" target="_blank" rel="noopener">GitHub</a>
       </div>
     </nav>
 
@@ -202,17 +205,13 @@
       </div>
       <div class="shortcut-strip">
         <span class="label">Shortcut:</span>
-        <span class="step-pill">📍 Get Location</span>
-        <span class="arrow">→</span>
-        <span class="step-pill">🌦 Open-Meteo weather</span>
-        <span class="arrow">→</span>
         <span class="step-pill is-highlight">🖼 Get Current Wallpaper</span>
         <span class="arrow">→</span>
         <span class="step-pill">⚙ Set Wallpaper</span>
       </div>
     </section>
 
-    <section class="section" style="padding-top:20px;">
+    <section class="section">
       <div class="split-grid">
         <div class="card">
           <div class="section-label">BRING YOUR OWN KEY</div>
