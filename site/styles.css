@@ -24,6 +24,7 @@ html, body { margin: 0; padding: 0; }
   --seg-active: rgba(255, 255, 255, 0.16);
   --gold-text: #f6c66b;
   --accent: #ff7a4d;
+  --accent-text: #ff7a4d;
   --good: #59d38a;
 }
 
@@ -35,14 +36,15 @@ html, body { margin: 0; padding: 0; }
     --text: #1a1922;
     --text-mid: #55535f;
     --text-soft: #403e4a;
-    --text-dim: #74727e;
-    --text-dimmer: #9895a2;
+    --text-dim: #666370;
+    --text-dimmer: #6b6874;
     --surface: rgba(22, 20, 32, 0.035);
     --surface-2: rgba(22, 20, 32, 0.06);
     --border: rgba(22, 20, 32, 0.1);
     --border-2: rgba(22, 20, 32, 0.14);
     --seg-active: rgba(22, 20, 32, 0.11);
-    --gold-text: #a9781a;
+    --gold-text: #8a6215;
+    --accent-text: #b5481f;
   }
 }
 
@@ -53,14 +55,15 @@ html, body { margin: 0; padding: 0; }
   --text: #1a1922;
   --text-mid: #55535f;
   --text-soft: #403e4a;
-  --text-dim: #74727e;
-  --text-dimmer: #9895a2;
+  --text-dim: #666370;
+  --text-dimmer: #6b6874;
   --surface: rgba(22, 20, 32, 0.035);
   --surface-2: rgba(22, 20, 32, 0.06);
   --border: rgba(22, 20, 32, 0.1);
   --border-2: rgba(22, 20, 32, 0.14);
   --seg-active: rgba(22, 20, 32, 0.11);
-  --gold-text: #a9781a;
+  --gold-text: #8a6215;
+  --accent-text: #b5481f;
 }
 
 :root[data-theme="dark"] {
@@ -127,7 +130,6 @@ a { color: inherit; }
   gap: 12px;
   text-decoration: none;
   color: inherit;
-  margin-right: auto;
 }
 
 .brand img {
@@ -148,6 +150,8 @@ a { color: inherit; }
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-left: auto;
+  order: 2;
 }
 
 .icon-btn {
@@ -205,10 +209,13 @@ button.icon-btn { padding: 0; }
   white-space: nowrap;
 }
 
-/* Keep logo + icons on one row on phones; nav links wrap to their own row. */
+/* Keep logo + icons on one row on phones; nav links wrap to their own
+   row, centered. (order swaps back to icons-before-links so wrapping
+   groups brand+icons on line 1 instead of brand+links.) */
 @media (max-width: 640px) {
   .nav { column-gap: 10px; }
-  .nav-icons { gap: 8px; }
+  .nav-icons { gap: 8px; order: 1; }
+  .nav-links { order: 2; width: 100%; justify-content: center; }
   .icon-btn { width: 32px; height: 32px; font-size: 14px; }
   .brand { gap: 9px; }
   .brand img { width: 30px; height: 30px; }
@@ -427,7 +434,8 @@ button.icon-btn { padding: 0; }
 .lock-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
+  margin-top: 14px;
   padding: 8px 15px;
   background: rgba(10, 10, 18, 0.34);
   backdrop-filter: blur(8px);
@@ -435,12 +443,6 @@ button.icon-btn { padding: 0; }
   border-radius: 999px;
   font-size: 13px;
   font-weight: 600;
-}
-
-.lock-badge .dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
 }
 
 .island {
@@ -483,6 +485,66 @@ button.icon-btn { padding: 0; }
   background: var(--seg-active);
   color: var(--text);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset;
+}
+
+.weather-toggle {
+  position: relative;
+  z-index: 2;
+  margin-top: 18px;
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+}
+
+.weather-toggle button {
+  border: none;
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+  line-height: 1;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  transition: all .25s ease;
+}
+
+.weather-toggle button[aria-pressed="true"] {
+  background: var(--seg-active);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset;
+}
+
+/* Weather overlay on the phone preview — sits above the time-of-day sky,
+   below the mountains. "clear" shows nothing; others tint/texture the sky. */
+.weather-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .5s ease;
+}
+
+.weather-fx.is-active { opacity: 1; }
+
+.weather-fx[data-weather-fx="cloudy"] {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.1) 55%, transparent 100%);
+}
+
+.weather-fx[data-weather-fx="rain"] {
+  background:
+    repeating-linear-gradient(112deg, rgba(214, 227, 255, 0.35) 0 2px, transparent 2px 16px),
+    linear-gradient(180deg, rgba(12, 16, 30, 0.22), rgba(12, 16, 30, 0.1));
+}
+
+.weather-fx[data-weather-fx="snow"] {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.9) 1.4px, transparent 1.6px);
+  background-size: 22px 22px;
+  background-position: 0 0, 11px 11px;
 }
 
 /* ---------- Math / concept section ---------- */

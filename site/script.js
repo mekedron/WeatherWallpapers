@@ -70,6 +70,32 @@
 
   setTimeOfDay(defaultTimeOfDay());
 
+  // ---------- Hero weather switcher ----------
+
+  var WEATHER_ICON = { clear: '☀', cloudy: '⛅', rain: '🌧', snow: '❄' };
+  var WEATHER_LABEL = { clear: 'Clear', cloudy: 'Partly Cloudy', rain: 'Rain', snow: 'Snow' };
+
+  function setWeather(value) {
+    var fx = document.querySelector('[data-weather-fx]');
+    if (fx) {
+      fx.setAttribute('data-weather-fx', value);
+      fx.classList.toggle('is-active', value !== 'clear');
+    }
+    document.querySelectorAll('[data-weather-btn]').forEach(function (btn) {
+      btn.setAttribute('aria-pressed', String(btn.getAttribute('data-weather-btn') === value));
+    });
+    var icon = document.querySelector('[data-weather-icon]');
+    var label = document.querySelector('[data-weather-label]');
+    if (icon) icon.textContent = WEATHER_ICON[value];
+    if (label) label.textContent = WEATHER_LABEL[value];
+  }
+
+  document.querySelectorAll('[data-weather-btn]').forEach(function (btn) {
+    btn.addEventListener('click', function () { setWeather(btn.getAttribute('data-weather-btn')); });
+  });
+
+  setWeather('clear');
+
   // ---------- Live lock-screen date ----------
 
   var dateEl = document.querySelector('[data-lock-date]');
